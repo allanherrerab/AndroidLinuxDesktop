@@ -1,0 +1,20 @@
+<resources>
+    <string name="app_name">Debian Noroot</string>
+    <string name="ready">Ready. Debian files are kept in app storage.</string>
+    <string name="start">Start Debian</string>
+    <string name="stop">Stop session</string>
+    <string name="view_log">View session log</string>
+    <string name="session_note">The X11 desktop continues in the background. Slide to move the cursor, tap to click, double-tap and drag or use Drag to hold the left button. Two fingers scroll. Configure display, input and PulseAudio in Settings. Shared files appear at /sdcard.</string>
+    <string name="starting">Starting Debian. First start extracts the root filesystem.</string>
+    <string name="stopping">Stopping session…</string>
+    <string name="waiting">Waiting for native X11 desktop…</string>
+    <string name="log_title">Debian session log</string>
+    <string name="close">Close</string>
+    <string name="settings">Display, mouse &amp; audio settings</string>
+    <string name="import_image">Import Debian image (.obb / .tar.xz)</string>
+    <string name="import_in_progress">An image import is already in progress</string>
+    <string name="importing_image">Importing and checking Debian image…</string>
+    <string name="wait_for_import">Wait for image verification to finish, then tap Start.</string>
+    <string name="x11_disconnected">X11 server disconnected. Restart the desktop from the main screen.</string>
+    <string name="x11_connecting">Connecting to X11: %1$s</string>
+</resources>

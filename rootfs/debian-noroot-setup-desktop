@@ -1,0 +1,31 @@
+#!/bin/sh
+set -eu
+
+# Apply the app's requested layout once, before xfconfd or the panel starts.
+# Later user customizations survive restarts and APK updates.
+defaults=/usr/share/debian-noroot/desktop-defaults
+state="$HOME/.local/share/debian-noroot"
+marker="$state/bottom-panel-v1"
+[ ! -f "$marker" ] || exit 0
+if ! command -v firefox-esr >/dev/null 2>&1 ||
+        [ ! -f /usr/share/xfce4/panel/plugins/whiskermenu.desktop ]; then
+    echo "This older Debian image needs the updated desktop packages for the bottom panel."
+    echo "Run sudo /root/debian-noroot-install-desktop.sh to install them."
+    exit 0
+fi
+mkdir -p "$state" "$HOME/.config/xfce4/xfconf/xfce-perchannel-xml"
+backup="$state/before-bottom-panel-v1"
+mkdir -p "$backup"
+panel="$HOME/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml"
+[ ! -f "$panel" ] || cp -p "$panel" "$backup/xfce4-panel.xml"
+if [ -d "$HOME/.config/xfce4/panel" ]; then
+    cp -a "$HOME/.config/xfce4/panel" "$backup/panel"
+fi
+cp -a "$defaults/xfce4/." "$HOME/.config/xfce4/"
+mkdir -p "$HOME/.config/gtk-3.0"
+css="$HOME/.config/gtk-3.0/gtk.css"
+[ ! -f "$css" ] || cp -p "$css" "$backup/gtk.css"
+if ! grep -q 'debian-noroot.css' "$css" 2>/dev/null; then
+    printf '\n@import url("../xfce4/panel/debian-noroot.css");\n' >> "$css"
+fi
+touch "$marker"

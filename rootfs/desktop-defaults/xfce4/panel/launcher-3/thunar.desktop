@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Thunar File Manager
+Comment=Browse files and the shared folder
+Exec=thunar
+Icon=org.xfce.filemanager
+Terminal=false
+StartupNotify=true
