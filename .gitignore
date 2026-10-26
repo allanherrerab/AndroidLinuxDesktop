@@ -1,35 +1,37 @@
-# Gradle files
-.gradle/
-build/
-.kotlin/
+/.gradle/
+/build/
+/dist/
 
-# Local configuration file (sdk path, etc)
-local.properties
-
-# Log/OS Files
-*.log
-
-# Android Studio generated files and folders
-captures/
-.externalNativeBuild/
-.cxx/
-*.aab
-*.apk
-output-metadata.json
-
-# IntelliJ
+# Android Studio / IntelliJ project state and local IDE output.
+/.idea/
 *.iml
-.idea/
-misc.xml
-deploymentTargetDropDown.xml
-render.experimental.xml
+/captures/
+/externalNativeBuild/
+/app/.cxx/
+/app/build/
+/local.properties
 
-# Keystore files
-*.jks
+# Python, native-build, and editor caches.
+**/__pycache__/
+*.py[cod]
+*.swp
+*.swo
+*~
+
+# Local reports, temporary downloads, and failed/partial writes.
+*.log
+*.tmp
+*.temp
+*.partial
+*.bak
+*.orig
+*.rej
+
+# OS metadata.
+.DS_Store
+Thumbs.db
+
+# Signing material and local credentials.
 *.keystore
-
-# Google Services (e.g. APIs or Firebase)
-google-services.json
-
-# Android Profiling
-*.hprof
+*.jks
+*.p12

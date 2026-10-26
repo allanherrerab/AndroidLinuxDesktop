@@ -1,5 +1,10 @@
 # Third-party components
 
+The launcher icon is copied unchanged from `res/drawable/icon.png` in the supplied
+`references/apk/debian-noroot-2020.apk`, replacing the modern approximation.
+Its SHA-256 is `1254c38af8cd257616d40f883e6bbd2ccb132580895ce1178f7aaddfd7dae6d2`.
+The original APK and its upstream attribution are retained.
+
 | Component | Version/source | Integration |
 | --- | --- | --- |
 | PRoot | [Termux PRoot 5.1.107.100](https://github.com/termux/proot/tree/v5.1.107.100) | Rebuilt ARM64 executable and freestanding loader; SysV IPC and fake identity extensions. GPL-2.0-or-later. |
