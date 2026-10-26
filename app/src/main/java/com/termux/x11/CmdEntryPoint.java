@@ -5,6 +5,7 @@ import dalvik.annotation.optimization.CriticalNative;
 /** Registered ABI of the pinned, unmodified Termux:X11 engine. */
 public final class CmdEntryPoint {
     public CmdEntryPoint() { NativeLibrary.load(); }
+    // Native start posts AChoreographer callbacks to the calling thread's Looper.
     public native boolean start(String[] args);
     public native ParcelFileDescriptor getXConnection();
     public native ParcelFileDescriptor getLogcatOutput();

@@ -1,0 +1,6 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <application android:label="Debian Noroot acceptance" tools:replace="android:label">
+        <activity android:name="org.debiannoroot.FocusProbeActivity" android:exported="true" />
+    </application>
+</manifest>

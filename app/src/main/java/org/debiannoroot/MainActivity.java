@@ -16,19 +16,20 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-public final class MainActivity extends Activity {
+public final class MainActivity extends LocalizedActivity {
     private TextView status;
     private volatile boolean importing;
     private final BroadcastReceiver statusReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (status != null) status.setText(intent.getStringExtra("status"));
+            if (status != null) status.setText(t(intent.getStringExtra("status")));
         }
     };
 
     @Override
     public void onCreate(Bundle state) {
         super.onCreate(state);
+        setVolumeControlStream(android.media.AudioManager.STREAM_MUSIC);
         getWindow().setStatusBarColor(Color.rgb(32, 32, 32));
         getWindow().setNavigationBarColor(Color.rgb(32, 32, 32));
         if (Build.VERSION.SDK_INT >= 33 &&
@@ -76,6 +77,7 @@ public final class MainActivity extends Activity {
         Button settings=new Button(this);settings.setText(R.string.settings);
         settings.setOnClickListener(view->startActivity(new Intent(this,SettingsActivity.class)));
         page.addView(settings,matchWrap());
+        Button region=new Button(this);region.setText(t("Language, keyboard & timezone"));region.setOnClickListener(v->startActivity(new Intent(this,SetupActivity.class)));page.addView(region,matchWrap());
         Button image=new Button(this);image.setText(R.string.import_image);
         image.setOnClickListener(view->startActivityForResult(new Intent(Intent.ACTION_OPEN_DOCUMENT)
                 .addCategory(Intent.CATEGORY_OPENABLE).setType("*/*").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION),41));
@@ -89,7 +91,7 @@ public final class MainActivity extends Activity {
         TextView note = new TextView(this);
         note.setText(R.string.session_note);
         if(new java.io.File(getFilesDir(),"rootfs/.debian-noroot-ready").isFile() && !new java.io.File(getFilesDir(),"rootfs/usr/bin/pulseaudio").isFile())
-            note.append("\nExisting installation: to enable audio, run sudo /root/debian-noroot-install-desktop.sh in the Debian terminal, then restart.");
+            note.append("\n"+t("First launch will install missing audio packages automatically. Internet is required; setup progress appears in the session log."));
         note.setTextSize(13);
         note.setTextColor(Color.GRAY);
         note.setPadding(0, dp(24), 0, 0);
@@ -97,6 +99,7 @@ public final class MainActivity extends Activity {
 
         android.widget.ScrollView scroll=new android.widget.ScrollView(this);scroll.setFillViewport(true);scroll.addView(page);
         setContentView(scroll,new ViewGroup.LayoutParams(-1,-1));
+        if(!new RegionalSettings(this).complete() && state==null)startActivity(new Intent(this,SetupActivity.class));
     }
 
     @Override
@@ -111,8 +114,8 @@ public final class MainActivity extends Activity {
             // this legacy registration; API 33+ uses the explicit flag above.
             registerReceiver(statusReceiver, filter, "org.debiannoroot.permission.INTERNAL", null);
         }
-        status.setText(getSharedPreferences("session", MODE_PRIVATE).getString("status",
-                "Ready. Debian files are kept in app storage."));
+        status.setText(t(getSharedPreferences("session", MODE_PRIVATE).getString("status",
+                getString(R.string.ready))));
     }
 
     @Override
@@ -130,8 +133,8 @@ public final class MainActivity extends Activity {
         status.setText(R.string.importing_image);
         new Thread(()-> {
             String message;
-            try {new RootfsImage(getApplicationContext()).importFrom(uri);message="Image verified and ready. Tap Start. Existing Debian files are preserved.";}
-            catch(Exception error){message="Image import failed: "+error.getMessage();}
+            try {new RootfsImage(getApplicationContext()).importFrom(uri);message=t("Image verified and ready. Tap Start. Existing Debian files are preserved.");}
+            catch(Exception error){message=t("Image import failed")+": "+error.getMessage();}
             importing=false;
             final String text=message;
             getSharedPreferences("session",MODE_PRIVATE).edit().putString("status",text).apply();
@@ -140,10 +143,12 @@ public final class MainActivity extends Activity {
     }
 
     private void startSession() {
+        if(!new RegionalSettings(this).complete()){startActivity(new Intent(this,SetupActivity.class));return;}
         if(importing){status.setText(R.string.wait_for_import);return;}
         status.setText(R.string.starting);
-        getSharedPreferences("session", MODE_PRIVATE).edit().putString("phase", "starting")
-                .putString("status", status.getText().toString()).apply();
+        // The service owns the persisted phase. Reopening an already running
+        // DesktopActivity may reuse its connection without another CONNECTED
+        // event, so the launcher must not replace "running" with "starting".
         Intent intent = new Intent(this, DesktopService.class)
                 .setAction(DesktopService.ACTION_START);
         startForegroundService(intent);
@@ -156,15 +161,19 @@ public final class MainActivity extends Activity {
     }
 
     private void showLog() {
-        String text = "No session log yet.";
-        java.io.File file = new java.io.File(getFilesDir(), "desktop.log");
-        try (java.io.RandomAccessFile log = new java.io.RandomAccessFile(file, "r")) {
-            long offset = Math.max(0, log.length() - 65536);
-            log.seek(offset);
-            byte[] bytes = new byte[(int)(log.length() - offset)];
-            log.readFully(bytes);
-            text = new String(bytes, java.nio.charset.StandardCharsets.UTF_8);
-        } catch (java.io.IOException ignored) { }
+        StringBuilder text = new StringBuilder();
+        for(String name:new String[]{"desktop.log","x11.log"}) {
+            java.io.File file = new java.io.File(getFilesDir(), name);
+            try (java.io.RandomAccessFile log = new java.io.RandomAccessFile(file, "r")) {
+                long offset = Math.max(0, log.length() - 65536);
+                log.seek(offset);
+                byte[] bytes = new byte[(int)(log.length() - offset)];
+                log.readFully(bytes);
+                text.append("\n=== ").append(name).append(" ===\n")
+                        .append(new String(bytes, java.nio.charset.StandardCharsets.UTF_8));
+            } catch (java.io.IOException ignored) { }
+        }
+        if(text.length()==0)text.append(t("No session log yet."));
         TextView content = new TextView(this);
         content.setText(text);
         content.setTextIsSelectable(true);

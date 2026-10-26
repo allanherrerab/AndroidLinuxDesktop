@@ -27,24 +27,16 @@ public final class X11Service extends Service {
             data.enforceInterface(TOKEN);
             if(code==START) {
                 String root=data.readString();boolean legacy=data.readInt()!=0;
-                if(server==null && failure==null) {
-                    try {
-                        File tmp=new File(root,"tmp");
-                        if(!tmp.isDirectory()&&!tmp.mkdirs())throw new IllegalStateException("Cannot create X11 runtime folder");
-                        new File(tmp,".X11-unix").mkdirs();
-                        new File(tmp,".X0-lock").delete();new File(tmp,".X11-unix/X0").delete();
-                        Os.setenv("TMPDIR",tmp.getAbsolutePath(),true);
-                        Os.setenv("XKB_CONFIG_ROOT",new File(root,"usr/share/X11/xkb").getAbsolutePath(),true);
-                        endpoint=new File(tmp,".X11-unix/X0");
-                        int networkPolicy=NativeBridge.restrictX11Network();
-                        if(networkPolicy!=0)throw new IllegalStateException("Cannot disable X11 network discovery ("+networkPolicy+")");
-                        CmdEntryPoint candidate=new CmdEntryPoint();
-                        String[] args=legacy?new String[]{":0","-nolisten","tcp","-noreset","-auth",new File(tmp,"debian-noroot.Xauthority").getAbsolutePath(),"-legacy-drawing","-disable-dri3","-extension","MIT-SHM"}:
-                                new String[]{":0","-nolisten","tcp","-noreset","-auth",new File(tmp,"debian-noroot.Xauthority").getAbsolutePath(),"-disable-dri3","-extension","MIT-SHM"};
-                        if(!candidate.start(args))throw new IllegalStateException("X11 native server rejected startup; see Android logcat");
-                        server=candidate;
-                    } catch(Exception | LinkageError error) { failure=error.toString(); }
-                }
+                // Native start obtains AChoreographer from the calling Looper.
+                // Binder pool threads have none, so starting here would SIGSEGV.
+                java.util.concurrent.FutureTask<Void> startup=new java.util.concurrent.FutureTask<>(()-> {
+                    startOnMainThread(root,legacy);
+                    return null;
+                });
+                if(android.os.Looper.myLooper()==getMainLooper())startup.run();
+                else new android.os.Handler(getMainLooper()).post(startup);
+                try { startup.get(30,java.util.concurrent.TimeUnit.SECONDS); }
+                catch(Exception error) { throw new RemoteException("X11 startup did not complete: "+error); }
                 reply.writeNoException();reply.writeString(failure);
             } else if(code==CONNECTION) {
                 reply.writeNoException();
@@ -58,6 +50,29 @@ public final class X11Service extends Service {
             return true;
         }
     };
+    private void startOnMainThread(String root,boolean legacy) {
+        if(android.os.Looper.myLooper()!=getMainLooper())throw new IllegalStateException("X11 requires the main Looper");
+        if(server!=null || failure!=null)return;
+        try {
+            java.io.FileDescriptor log=Os.open(new File(getFilesDir(),"x11.log").getAbsolutePath(),
+                    android.system.OsConstants.O_WRONLY|android.system.OsConstants.O_CREAT|android.system.OsConstants.O_TRUNC,0600);
+            try { Os.dup2(log,1);Os.dup2(log,2); } finally { Os.close(log); }
+            File tmp=new File(root,"tmp");
+            if(!tmp.isDirectory()&&!tmp.mkdirs())throw new IllegalStateException("Cannot create X11 runtime folder");
+            new File(tmp,".X11-unix").mkdirs();
+            new File(tmp,".X0-lock").delete();new File(tmp,".X11-unix/X0").delete();
+            Os.setenv("TMPDIR",tmp.getAbsolutePath(),true);
+            Os.setenv("XKB_CONFIG_ROOT",new File(root,"usr/share/X11/xkb").getAbsolutePath(),true);
+            endpoint=new File(tmp,".X11-unix/X0");
+            int networkPolicy=NativeBridge.restrictX11Network();
+            if(networkPolicy!=0)throw new IllegalStateException("Cannot disable X11 network discovery ("+networkPolicy+")");
+            CmdEntryPoint candidate=new CmdEntryPoint();
+            String[] args=legacy?new String[]{":0","-nolisten","tcp","-noreset","-auth",new File(tmp,"debian-noroot.Xauthority").getAbsolutePath(),"-legacy-drawing","-disable-dri3","-extension","MIT-SHM"}:
+                    new String[]{":0","-nolisten","tcp","-noreset","-auth",new File(tmp,"debian-noroot.Xauthority").getAbsolutePath(),"-disable-dri3","-extension","MIT-SHM"};
+            if(!candidate.start(args))throw new IllegalStateException("X11 native server rejected startup; see Android logcat");
+            server=candidate;
+        } catch(Exception | LinkageError error) { failure=error.toString(); }
+    }
     @Override public IBinder onBind(Intent intent) { return binder; }
     @Override public void onDestroy() { super.onDestroy();Process.killProcess(Process.myPid()); }
     static void start(IBinder remote,File root,boolean legacy) throws Exception {

@@ -52,7 +52,19 @@ android {
         }
     }
 
+    // Language switching is available offline, including bundle installations.
+    bundle {
+        language { enableSplit = false }
+    }
+
     buildTypes {
+        // Install alongside the user's app for destructive first-run acceptance.
+        acceptance {
+            initWith debug
+            applicationIdSuffix '.acceptance'
+            versionNameSuffix '-acceptance'
+            matchingFallbacks = ['debug']
+        }
         release {
             minifyEnabled false
         }

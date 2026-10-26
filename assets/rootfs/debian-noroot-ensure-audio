@@ -1,0 +1,29 @@
+#!/bin/sh
+set -eu
+
+# Check package state, rather than a marker that can outlive removed packages.
+audio_installed() {
+    for package in pulseaudio pulseaudio-utils libasound2-plugins xfce4-pulseaudio-plugin pavucontrol; do
+        [ "$(dpkg-query -W -f='${Status}' "$package" 2>/dev/null)" = "install ok installed" ] || return 1
+    done
+}
+audio_installed && exit 0
+
+# PRoot emulates sudo inside the guest; this never asks Android for root.
+if [ "$(id -u)" != 0 ]; then
+    exec sudo -n -- /bin/sh "$0"
+fi
+export DEBIAN_FRONTEND=noninteractive
+# Kernel-backed lock is released automatically if startup is stopped.
+exec 9>/tmp/debian-noroot-audio-install.lock
+flock -x 9
+audio_installed && exit 0
+
+echo "First-run audio setup: installing PulseAudio and ALSA playback support…"
+apt-get -o APT::Sandbox::User=root -o Acquire::Retries=1 \
+    -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+apt-get -o APT::Sandbox::User=root -o Acquire::Retries=1 \
+    -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 \
+    install -y --no-install-recommends pulseaudio pulseaudio-utils libasound2-plugins xfce4-pulseaudio-plugin pavucontrol
+audio_installed
+echo "First-run audio setup complete."

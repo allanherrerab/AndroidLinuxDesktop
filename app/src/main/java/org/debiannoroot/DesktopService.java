@@ -80,6 +80,8 @@ public final class DesktopService extends Service {
     }
 
 
+    @Override protected void attachBaseContext(Context base){super.attachBaseContext(RegionalSettings.localized(base));}
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -115,6 +117,7 @@ public final class DesktopService extends Service {
         publishStatus("starting", "Preparing Debian. First start extracts the desktop image…");
         worker.execute(() -> {
             try {
+                SessionLogs.begin(getFilesDir());
                 File rootfs = new File(getFilesDir(), "rootfs");
                 synchronized (INSTALL_LOCK) {
                     if (stopping) return;
@@ -130,6 +133,11 @@ public final class DesktopService extends Service {
                         new File(rootfs, "usr/local/bin/debian-noroot-startx"), true);
                 copyAsset("rootfs/debian-noroot-setup-desktop",
                         new File(rootfs, "usr/local/bin/debian-noroot-setup-desktop"), true);
+                copyAsset("rootfs/debian-noroot-ensure-audio",
+                        new File(rootfs, "usr/local/bin/debian-noroot-ensure-audio"), true);
+                copyAsset("rootfs/debian-noroot-setup-audio-panel",
+                        new File(rootfs, "usr/local/bin/debian-noroot-setup-audio-panel"), true);
+                copyAsset("rootfs/debian-noroot-ensure-locale",new File(rootfs,"usr/local/bin/debian-noroot-ensure-locale"),true);
                 copyAsset("rootfs/install-desktop.sh",
                         new File(rootfs, "root/debian-noroot-install-desktop.sh"), true);
                 copyAssetTree("rootfs/desktop-defaults",
@@ -140,11 +148,15 @@ public final class DesktopService extends Service {
                 }
                 configureResolver(rootfs);
                 configureTimezone(rootfs);
+                String guestLanguage=new RegionalSettings(this).guestLanguage();
+                java.nio.file.Files.write(new File(rootfs,"etc/default/locale").toPath(),("LANG="+RegionalConfig.locale(guestLanguage)+"\nLANGUAGE="+guestLanguage+"\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                java.nio.file.Files.write(new File(rootfs,"etc/profile.d/debian-noroot-locale.sh").toPath(),("export LANG='"+RegionalConfig.locale(guestLanguage)+"' LANGUAGE='"+guestLanguage+"' TZ=':/etc/localtime'\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                java.nio.file.Files.write(new File(rootfs,"tmp/debian-noroot-progress").toPath(),"locale_setup\n".getBytes(java.nio.charset.StandardCharsets.US_ASCII));
                 if(stopping)return;
                 startX11(rootfs);
                 SessionSettings settings=new SessionSettings(this);
                 java.nio.file.Files.write(new File(rootfs,"tmp/debian-noroot-session.conf").toPath(),
-                        ("NOROOT_AUDIO="+(settings.flag("audio",true)?"1":"0")+"\n").getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+                        ("NOROOT_AUDIO="+(settings.flag("audio",true)?"1":"0")+"\n"+RegionalConfig.guestSettings(new RegionalSettings(this).guestLanguage(),new RegionalSettings(this).keyboard())).getBytes(java.nio.charset.StandardCharsets.US_ASCII));
                 if(settings.flag("audio",true))audio=new PulseAudioPlayer(this,rootfs);
                 if (!stopping) {
                     publishStatus("running", "Starting XFCE desktop…");
@@ -305,10 +317,10 @@ public final class DesktopService extends Service {
     }
 
     private void configureTimezone(File rootfs) throws Exception {
-        String zone = java.util.TimeZone.getDefault().getID();
+        String zone = new RegionalSettings(this).timezone();
         if (!zone.matches("[A-Za-z0-9_+./-]+") || zone.contains("..")) return;
         File source = new File(rootfs, "usr/share/zoneinfo/" + zone);
-        if (!source.isFile()) return;
+        if (!source.isFile()) throw new java.io.IOException("Timezone data is missing: "+zone);
         File localtime = new File(rootfs, "etc/localtime");
         java.nio.file.Files.deleteIfExists(localtime.toPath());
         java.nio.file.Files.copy(source.toPath(), localtime.toPath());
@@ -348,20 +360,20 @@ public final class DesktopService extends Service {
 
     private void createChannel() {
         NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
-                "Debian session", NotificationManager.IMPORTANCE_LOW);
+                UiText.get(this,"Debian session"), NotificationManager.IMPORTANCE_LOW);
         getSystemService(NotificationManager.class).createNotificationChannel(channel);
     }
 
     private Notification makeNotification(String text) {
         Notification.Builder builder = new Notification.Builder(this, CHANNEL_ID);
         return builder.setContentTitle("Debian Noroot")
-                .setContentText(text)
+                .setContentText(UiText.get(this,text))
                 .setSmallIcon(android.R.drawable.stat_sys_download_done)
                 .setOngoing(true)
                 .setContentIntent(PendingIntent.getActivity(this, 0,
                         new Intent(this, DesktopActivity.class),
                         PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE))
-                .addAction(new Notification.Action.Builder(null, "Stop",
+                .addAction(new Notification.Action.Builder(null, UiText.get(this,"Stop"),
                         PendingIntent.getService(this, 1, new Intent(this, DesktopService.class)
                                 .setAction(ACTION_STOP), PendingIntent.FLAG_UPDATE_CURRENT |
                                 PendingIntent.FLAG_IMMUTABLE)).build())
@@ -373,6 +385,7 @@ public final class DesktopService extends Service {
     }
 
     private void publishStatus(String phase, String text) {
+        text=UiText.get(this,text);
         getSharedPreferences("session", MODE_PRIVATE).edit()
                 .putString("phase", phase).putString("status", text).apply();
         updateNotification(text);

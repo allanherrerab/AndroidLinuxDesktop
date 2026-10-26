@@ -71,10 +71,10 @@ static char **build_environment(const char *runtime_bin, const char *tmp_dir,
     environment[index++] = make_env("LD_LIBRARY_PATH", ld_path);
     environment[index++] = make_env("PROOT_TMP_DIR", tmp);
     environment[index++] = make_env("PROOT_LOADER", loader_path);
-    environment[index++] = make_env("PROOT_NO_SECCOMP", "1");
+    // Let PRoot probe seccomp acceleration and fall back on unsupported kernels.
     environment[index] = NULL;
     if (environment[index - 1] == NULL || environment[index - 2] == NULL ||
-        environment[index - 3] == NULL || environment[index - 4] == NULL) {
+        environment[index - 3] == NULL) {
         for (size_t i = *allocated_start; i < index; i++) free(environment[i]);
         free(environment);
         return NULL;

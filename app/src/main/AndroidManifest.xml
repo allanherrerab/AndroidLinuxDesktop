@@ -25,6 +25,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SetupActivity" android:exported="false" />
         <activity android:name=".SettingsActivity" android:exported="false" />
         <service android:name=".X11Service" android:process=":x11" android:exported="false" />
         <activity

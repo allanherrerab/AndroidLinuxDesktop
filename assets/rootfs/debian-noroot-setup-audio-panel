@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+# Update only the audio plugin; preserve existing panel layout and customizations.
+[ -f /usr/share/xfce4/panel/plugins/pulseaudio.desktop ] || exit 0
+if xfconf-query -c xfce4-panel -lv | grep -Eq '/plugins/plugin-[0-9]+[[:space:]]+pulseaudio([[:space:]]|$)'; then
+    exit 0
+fi
+panel=$(xfconf-query -c xfce4-panel -p /panels | awk '/^[0-9]+$/ {print; exit}')
+[ -n "$panel" ] || { echo "Audio panel setup: no panel to update"; exit 1; }
+ids=$(xfconf-query -c xfce4-panel -p "/panels/panel-$panel/plugin-ids" | awk '/^[0-9]+$/ {print}')
+plugin=11
+while xfconf-query -c xfce4-panel -p "/plugins/plugin-$plugin" >/dev/null 2>&1; do
+    plugin=$((plugin+1))
+done
+xfconf-query -c xfce4-panel -p "/plugins/plugin-$plugin" -n -t string -s pulseaudio
+set --
+for id in $ids; do set -- "$@" -t int -s "$id"; done
+xfconf-query -c xfce4-panel -p "/panels/panel-$panel/plugin-ids" -a "$@" -t int -s "$plugin"
+echo "Added XFCE PulseAudio volume control to panel $panel."

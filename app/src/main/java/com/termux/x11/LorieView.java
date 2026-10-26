@@ -39,10 +39,10 @@ public final class LorieView extends SurfaceView implements SurfaceHolder.Callba
         int width=settings.width(),height=settings.height();
         DisplayGeometry g=DisplayGeometry.compute(getWidth(),getHeight(),width,height,settings.scaling(),settings.scale(),settings.number("border",0,0,10),settings.flag("aspect43",false));
         setViewport(ptr,Math.round(g.left),Math.round(g.top),Math.round(g.width),Math.round(g.height),width,height,0);
-        setFiltering(ptr,settings.flag("filtering",true)?1:0);
+        setFiltering(ptr,settings.flag("filtering",true)?android.opengl.GLES20.GL_LINEAR:android.opengl.GLES20.GL_NEAREST);
         setClipboardSyncEnabled(ptr,false,false);
         sendWindowChange(ptr,width,height,settings.number("refresh",60,15,120),"Debian Noroot");
-        zoom(settings.number("magnifier",0,0,2)==1?200:100);
+        zoom(Math.min(400,settings.number("zoom",100,100,400)*(settings.number("magnifier",0,0,2)==1?2:1)));
     }
     @Override public void surfaceCreated(SurfaceHolder holder) { }
     @Override public void surfaceChanged(SurfaceHolder holder,int format,int w,int h) { if(ptr!=0)surfaceChanged(ptr,holder.getSurface());update(); }
