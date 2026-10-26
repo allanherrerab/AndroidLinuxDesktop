@@ -1,0 +1,169 @@
+Cancel	Cancelar	Cancelar	Annuler	Abbrechen	キャンセル	Anuluj
+Save	Guardar	Salvar	Enregistrer	Speichern	保存	Zapisz
+Done	Listo	Concluído	Terminé	Fertig	完了	Gotowe
+Back	Volver	Voltar	Retour	Zurück	戻る	Wstecz
+Settings	Ajustes	Configurações	Paramètres	Einstellungen	設定	Ustawienia
+Keyboard	Teclado	Teclado	Clavier	Tastatur	キーボード	Klawiatura
+Volume	Volumen	Volume	Volume	Lautstärke	音量	Głośność
+Zoom	Zoom	Zoom	Zoom	Zoom	ズーム	Powiększenie
+Fullscreen	Pantalla completa	Tela cheia	Plein écran	Vollbild	全画面	Pełny ekran
+Show controls	Mostrar controles	Mostrar controles	Afficher les commandes	Bedienelemente anzeigen	操作ボタンを表示	Pokaż przyciski
+Drag	Arrastrar	Arrastar	Glisser	Ziehen	ドラッグ	Przeciąganie
+Left click	Clic izquierdo	Clique esquerdo	Clic gauche	Linksklick	左クリック	Lewy przycisk
+Right click	Clic derecho	Clique direito	Clic droit	Rechtsklick	右クリック	Prawy przycisk
+Middle click	Clic central	Clique do meio	Clic central	Mittelklick	中央クリック	Środkowy przycisk
+Paste	Pegar	Colar	Coller	Einfügen	貼り付け	Wklej
+Desktop zoom	Zoom del escritorio	Zoom da área de trabalho	Zoom du bureau	Desktop-Zoom	デスクトップのズーム	Powiększenie pulpitu
+Phone media	Multimedia del teléfono	Mídia do telefone	Multimédia du téléphone	Telefon-Medien	スマートフォンのメディア	Multimedia telefonu
+App playback	Reproducción de la app	Reprodução do app	Lecture de l’application	App-Wiedergabe	アプリの再生	Odtwarzanie w aplikacji
+Playback volume	Volumen de reproducción	Volume de reprodução	Volume de lecture	Wiedergabelautstärke	再生音量	Głośność odtwarzania
+Language, keyboard & timezone	Idioma, teclado y zona horaria	Idioma, teclado e fuso horário	Langue, clavier et fuseau horaire	Sprache, Tastatur und Zeitzone	言語・キーボード・タイムゾーン	Język, klawiatura i strefa czasowa
+App language	Idioma de la app	Idioma do app	Langue de l’application	App-Sprache	アプリの言語	Język aplikacji
+Debian language	Idioma de Debian	Idioma do Debian	Langue de Debian	Debian-Sprache	Debian の言語	Język Debiana
+Guest keyboard layout	Distribución del teclado de Debian	Layout de teclado do Debian	Disposition du clavier Debian	Debian-Tastaturbelegung	Debian のキーボード配列	Układ klawiatury Debiana
+Timezone	Zona horaria	Fuso horário	Fuseau horaire	Zeitzone	タイムゾーン	Strefa czasowa
+Search timezone	Buscar zona horaria	Buscar fuso horário	Rechercher un fuseau horaire	Zeitzone suchen	タイムゾーンを検索	Szukaj strefy czasowej
+Save and continue	Guardar y continuar	Salvar e continuar	Enregistrer et continuer	Speichern und fortfahren	保存して続行	Zapisz i kontynuuj
+Choose settings for this app and Debian. Your phone settings are unchanged. Debian changes apply on the next session start.	Elige los ajustes de esta app y Debian. Los ajustes del teléfono no cambian. Los cambios de Debian se aplican al iniciar la siguiente sesión.	Escolha as configurações deste app e do Debian. As configurações do telefone não mudam. As alterações do Debian valem na próxima sessão.	Choisissez les paramètres de cette application et de Debian. Ceux du téléphone restent inchangés. Les changements Debian s’appliquent à la prochaine session.	Wählen Sie die Einstellungen für diese App und Debian. Die Telefoneinstellungen bleiben unverändert. Debian-Änderungen gelten ab der nächsten Sitzung.	このアプリと Debian の設定を選んでください。スマートフォンの設定は変更されません。Debian の変更は次回のセッション開始時に適用されます。	Wybierz ustawienia aplikacji i Debiana. Ustawienia telefonu pozostają bez zmian. Zmiany Debiana zostaną zastosowane przy następnym uruchomieniu sesji.
+The layout controls the guest keyboard. Android’s on-screen keyboard is selected separately; its Unicode input also supports Japanese.	La distribución controla el teclado de Debian. El teclado en pantalla de Android se elige por separado; su entrada Unicode también admite japonés.	O layout controla o teclado do Debian. O teclado virtual do Android é selecionado separadamente; a entrada Unicode também aceita japonês.	La disposition concerne le clavier Debian. Le clavier virtuel Android se choisit séparément ; sa saisie Unicode prend aussi en charge le japonais.	Die Belegung gilt für die Debian-Tastatur. Die Android-Bildschirmtastatur wird separat gewählt; ihre Unicode-Eingabe unterstützt auch Japanisch.	配列は Debian のキーボードに適用されます。Android の画面キーボードは別に選択します。Unicode 入力で日本語も入力できます。	Układ dotyczy klawiatury Debiana. Klawiaturę ekranową Androida wybiera się osobno; jej obsługa Unicode pozwala też wpisywać tekst japoński.
+Display settings	Ajustes de pantalla	Configurações de tela	Paramètres d’affichage	Anzeigeeinstellungen	画面設定	Ustawienia wyświetlania
+Resolution	Resolución	Resolução	Résolution	Auflösung	解像度	Rozdzielczość
+Guest display resolution	Resolución de pantalla de Debian	Resolução de tela do Debian	Résolution de l’écran Debian	Debian-Bildschirmauflösung	Debian 画面の解像度	Rozdzielczość ekranu Debiana
+Custom…	Personalizada…	Personalizada…	Personnalisée…	Benutzerdefiniert…	カスタム…	Niestandardowa…
+Custom resolution	Resolución personalizada	Resolução personalizada	Résolution personnalisée	Benutzerdefinierte Auflösung	カスタム解像度	Niestandardowa rozdzielczość
+Width	Ancho	Largura	Largeur	Breite	幅	Szerokość
+Height	Alto	Altura	Hauteur	Höhe	高さ	Wysokość
+Scaling	Escalado	Escala	Mise à l’échelle	Skalierung	拡大縮小	Skalowanie
+Fit	Ajustar	Ajustar	Ajuster	Einpassen	画面に合わせる	Dopasuj
+Stretch	Estirar	Esticar	Étirer	Strecken	引き伸ばす	Rozciągnij
+Integer scale (crop if needed)	Escala entera (recortar si es necesario)	Escala inteira (recortar se necessário)	Échelle entière (rogner si nécessaire)	Ganzzahlige Skalierung (ggf. zuschneiden)	整数倍（必要に応じて切り取り）	Skala całkowita (przytnij w razie potrzeby)
+Custom	Personalizada	Personalizada	Personnalisée	Benutzerdefiniert	カスタム	Niestandardowa
+Custom scale (%)	Escala personalizada (%)	Escala personalizada (%)	Échelle personnalisée (%)	Benutzerdefinierte Skalierung (%)	カスタム倍率 (%)	Niestandardowa skala (%)
+Linear video filtering	Filtrado lineal de imagen	Filtragem linear de imagem	Filtrage linéaire de l’image	Lineare Bildfilterung	画像の線形補間	Liniowe filtrowanie obrazu
+Keep 4:3 screen aspect ratio (Fit)	Mantener proporción 4:3 (Ajustar)	Manter proporção 4:3 (Ajustar)	Conserver le format 4:3 (Ajuster)	Seitenverhältnis 4:3 beibehalten (Einpassen)	縦横比 4:3 を維持（画面に合わせる）	Zachowaj proporcje 4:3 (Dopasuj)
+Hide system navigation buttons / immersive mode	Ocultar navegación del sistema / modo inmersivo	Ocultar navegação do sistema / modo imersivo	Masquer la navigation système / mode immersif	Systemnavigation ausblenden / immersiver Modus	システムのナビゲーションを非表示	Ukryj nawigację systemową / tryb immersyjny
+Keep screen awake	Mantener la pantalla encendida	Manter a tela ligada	Garder l’écran allumé	Bildschirm eingeschaltet lassen	画面をスリープさせない	Nie wygaszaj ekranu
+Screen orientation	Orientación de pantalla	Orientação da tela	Orientation de l’écran	Bildschirmausrichtung	画面の向き	Orientacja ekranu
+Automatic	Automática	Automática	Automatique	Automatisch	自動	Automatyczna
+Landscape	Horizontal	Paisagem	Paysage	Querformat	横向き	Pozioma
+Portrait	Vertical	Retrato	Portrait	Hochformat	縦向き	Pionowa
+TV / overscan border (%)	Borde de TV / sobreexploración (%)	Borda de TV / overscan (%)	Bordure TV / surbalayage (%)	TV-/Overscan-Rand (%)	テレビ・オーバースキャンの余白 (%)	Margines TV / overscan (%)
+Refresh rate (Hz)	Frecuencia de actualización (Hz)	Taxa de atualização (Hz)	Fréquence de rafraîchissement (Hz)	Bildwiederholrate (Hz)	リフレッシュレート (Hz)	Częstotliwość odświeżania (Hz)
+Compatibility drawing (restart desktop to apply)	Dibujo compatible (requiere reiniciar escritorio)	Renderização compatível (reinicie a sessão)	Affichage compatible (redémarrer le bureau)	Kompatible Darstellung (Desktop neu starten)	互換描画（デスクトップの再起動が必要）	Zgodne renderowanie (wymaga restartu pulpitu)
+Mouse emulation	Emulación de ratón	Emulação de mouse	Émulation de souris	Mausemulation	マウスのエミュレーション	Emulacja myszy
+Mouse movement	Movimiento del ratón	Movimento do mouse	Déplacement de la souris	Mausbewegung	マウスの移動	Ruch myszy
+Relative (laptop / touchpad)	Relativo (portátil / panel táctil)	Relativo (notebook / touchpad)	Relatif (pavé tactile)	Relativ (Laptop / Touchpad)	相対移動（タッチパッド）	Względny (laptop / touchpad)
+Absolute (touch screen)	Absoluto (pantalla táctil)	Absoluto (tela sensível ao toque)	Absolu (écran tactile)	Absolut (Touchscreen)	絶対位置（タッチ画面）	Bezwzględny (ekran dotykowy)
+Relative mouse speed	Velocidad relativa del ratón	Velocidade relativa do mouse	Vitesse relative de la souris	Relative Mausgeschwindigkeit	相対移動の速度	Prędkość względnego ruchu myszy
+Very slow	Muy lenta	Muito lenta	Très lente	Sehr langsam	非常に遅い	Bardzo wolna
+Slow	Lenta	Lenta	Lente	Langsam	遅い	Wolna
+Medium	Media	Média	Moyenne	Mittel	標準	Średnia
+Fast	Rápida	Rápida	Rapide	Schnell	速い	Szybka
+Very fast	Muy rápida	Muito rápida	Très rapide	Sehr schnell	非常に速い	Bardzo szybka
+Relative mouse acceleration	Aceleración relativa del ratón	Aceleração relativa do mouse	Accélération relative de la souris	Relative Mausbeschleunigung	相対移動の加速	Przyspieszenie względnego ruchu myszy
+None	Ninguna	Nenhuma	Aucune	Keine	なし	Brak
+Left mouse click	Clic izquierdo del ratón	Clique esquerdo do mouse	Clic gauche de la souris	Linke Maustaste	左クリック	Lewy przycisk myszy
+Tap	Tocar	Toque	Toucher	Tippen	タップ	Stuknięcie
+Tap or hold	Tocar o mantener	Tocar ou segurar	Toucher ou maintenir	Tippen oder halten	タップまたは長押し	Stuknięcie lub przytrzymanie
+Normal (touch-down / drag)	Normal (presionar / arrastrar)	Normal (pressionar / arrastar)	Normal (appuyer / glisser)	Normal (berühren / ziehen)	通常（押す・ドラッグ）	Normalny (dotknięcie / przeciąganie)
+Hold at the same spot	Mantener en el mismo lugar	Segurar no mesmo ponto	Maintenir au même endroit	An derselben Stelle halten	同じ位置で長押し	Przytrzymanie w miejscu
+Second finger	Segundo dedo	Segundo dedo	Deuxième doigt	Zweiter Finger	2 本目の指	Drugi palec
+Touch pressure	Presión táctil	Pressão do toque	Pression tactile	Berührungsdruck	タッチの圧力	Siła dotyku
+Touch near cursor	Tocar cerca del cursor	Tocar perto do cursor	Toucher près du curseur	Nahe am Zeiger berühren	カーソルの近くをタップ	Dotknięcie w pobliżu kursora
+Joystick / D-pad center	Centro del mando / cruceta	Centro do joystick / direcional	Centre du joystick / pavé directionnel	Joystick-/Steuerkreuzmitte	ジョイスティック・方向キーの中央	Środek joysticka / krzyżaka
+Right mouse click	Clic derecho del ratón	Clique direito do mouse	Clic droit de la souris	Rechte Maustaste	右クリック	Prawy przycisk myszy
+Hold or two-finger tap	Mantener o tocar con dos dedos	Segurar ou tocar com dois dedos	Maintenir ou toucher à deux doigts	Halten oder mit zwei Fingern tippen	長押しまたは 2 本指タップ	Przytrzymanie lub stuknięcie dwoma palcami
+Hold	Mantener	Segurar	Maintenir	Halten	長押し	Przytrzymanie
+Second-finger tap	Toque con segundo dedo	Toque do segundo dedo	Toucher du deuxième doigt	Mit zweitem Finger tippen	2 本目の指でタップ	Stuknięcie drugim palcem
+Menu / mouse key	Tecla Menú / ratón	Tecla Menu / mouse	Touche Menu / souris	Menü-/Maustaste	メニュー・マウスキー	Klawisz menu / myszy
+Disabled	Desactivado	Desativado	Désactivé	Deaktiviert	無効	Wyłączone
+Holding timeout	Tiempo de pulsación larga	Tempo para toque longo	Délai d’appui long	Haltezeit	長押しの時間	Czas przytrzymania
+0.3 sec	0,3 s	0,3 s	0,3 s	0,3 s	0.3 秒	0,3 s
+0.5 sec	0,5 s	0,5 s	0,5 s	0,5 s	0.5 秒	0,5 s
+0.7 sec	0,7 s	0,7 s	0,7 s	0,7 s	0.7 秒	0,7 s
+1 sec	1 s	1 s	1 s	1 s	1 秒	1 s
+1.5 sec	1,5 s	1,5 s	1,5 s	1,5 s	1.5 秒	1,5 s
+Touch pressure threshold (%)	Umbral de presión táctil (%)	Limite de pressão do toque (%)	Seuil de pression tactile (%)	Berührungsdruck-Schwelle (%)	タッチ圧力のしきい値 (%)	Próg siły dotyku (%)
+Magnification	Ampliación	Ampliação	Grossissement	Vergrößerung	拡大表示	Powiększenie
+Off	Desactivado	Desativado	Désactivé	Aus	オフ	Wyłączone
+2× cursor-following zoom	Zoom 2× siguiendo el cursor	Zoom 2× seguindo o cursor	Zoom 2× suivant le curseur	2×-Zoom folgt dem Zeiger	カーソルに追従する 2 倍ズーム	Zoom 2× śledzący kursor
+Floating magnifying glass (Android 9+)	Lupa flotante (Android 9+)	Lupa flutuante (Android 9+)	Loupe flottante (Android 9+)	Schwebende Lupe (Android 9+)	フローティング拡大鏡（Android 9 以降）	Pływająca lupa (Android 9+)
+Hide Android mouse pointer (use guest cursor)	Ocultar puntero de Android (usar el de Debian)	Ocultar ponteiro do Android (usar o do Debian)	Masquer le pointeur Android (utiliser celui de Debian)	Android-Mauszeiger ausblenden (Debian-Zeiger nutzen)	Android のポインターを隠す（Debian のカーソルを使用）	Ukryj wskaźnik Androida (używaj kursora Debiana)
+Filter stylus / hover jitter	Filtrar vibración del lápiz / puntero	Filtrar tremor da caneta / ponteiro	Filtrer les tremblements du stylet / survol	Stift-/Schwebe-Zittern filtern	ペン・ホバーのぶれを軽減	Filtruj drgania rysika / unoszenia
+Move pointer when hovering	Mover puntero al pasar por encima	Mover ponteiro ao pairar	Déplacer le pointeur au survol	Zeiger beim Schweben bewegen	ホバー時にポインターを移動	Przesuwaj wskaźnik podczas unoszenia
+Move mouse with joystick / trackball	Mover ratón con mando / bola	Mover mouse com joystick / trackball	Déplacer la souris avec joystick / boule	Maus mit Joystick / Trackball bewegen	ジョイスティック・トラックボールで移動	Steruj myszą joystickiem / trackballem
+Click with joystick / D-pad center	Clic con centro del mando / cruceta	Clicar com centro do joystick / direcional	Cliquer au centre du joystick / pavé	Mit Joystick-/Steuerkreuzmitte klicken	ジョイスティック・方向キー中央でクリック	Klikaj środkiem joysticka / krzyżaka
+Joystick speed	Velocidad del mando	Velocidade do joystick	Vitesse du joystick	Joystick-Geschwindigkeit	ジョイスティックの速度	Prędkość joysticka
+Joystick acceleration	Aceleración del mando	Aceleração do joystick	Accélération du joystick	Joystick-Beschleunigung	ジョイスティックの加速	Przyspieszenie joysticka
+Control mouse with gyroscope	Controlar ratón con giroscopio	Controlar mouse com giroscópio	Contrôler la souris avec le gyroscope	Maus mit Gyroskop steuern	ジャイロでマウスを操作	Steruj myszą za pomocą żyroskopu
+Gyroscope sensitivity	Sensibilidad del giroscopio	Sensibilidade do giroscópio	Sensibilité du gyroscope	Gyroskop-Empfindlichkeit	ジャイロの感度	Czułość żyroskopu
+Keyboard & controls	Teclado y controles	Teclado e controles	Clavier et commandes	Tastatur und Bedienelemente	キーボードと操作	Klawiatura i sterowanie
+Desktop zoom (%)	Zoom del escritorio (%)	Zoom da área de trabalho (%)	Zoom du bureau (%)	Desktop-Zoom (%)	デスクトップの倍率 (%)	Powiększenie pulpitu (%)
+Show F1–F12 key row	Mostrar fila de teclas F1–F12	Mostrar linha de teclas F1–F12	Afficher la rangée F1–F12	F1–F12-Tastenreihe anzeigen	F1～F12 キー列を表示	Pokaż rząd klawiszy F1–F12
+Fullscreen desktop	Escritorio en pantalla completa	Área de trabalho em tela cheia	Bureau en plein écran	Desktop im Vollbild	デスクトップを全画面表示	Pulpit na pełnym ekranie
+Remap physical keys	Reasignar teclas físicas	Remapear teclas físicas	Réaffecter les touches physiques	Physische Tasten neu zuweisen	物理キーの割り当て	Zmień przypisania klawiszy fizycznych
+Remap physical key	Reasignar tecla física	Remapear tecla física	Réaffecter une touche physique	Physische Taste neu zuweisen	物理キーの割り当て	Zmień przypisanie klawisza fizycznego
+Press a hardware key (except Home or Power).	Pulsa una tecla física (excepto Inicio o Encendido).	Pressione uma tecla física (exceto Início ou Energia).	Appuyez sur une touche physique (sauf Accueil ou Marche).	Drücken Sie eine physische Taste (außer Home oder Ein/Aus).	物理キーを押してください（ホーム・電源以外）。	Naciśnij klawisz fizyczny (oprócz Początek i Zasilanie).
+Default	Predeterminada	Padrão	Par défaut	Standard	既定	Domyślne
+Escape	Escape	Escape	Échap	Escape	Esc	Escape
+Shift	Mayús	Shift	Maj	Umschalt	Shift	Shift
+Space	Espacio	Espaço	Espace	Leertaste	スペース	Spacja
+Delete	Suprimir	Excluir	Supprimer	Entfernen	削除	Usuń
+Left	Izquierda	Esquerda	Gauche	Links	左	Lewo
+Right	Derecha	Direita	Droite	Rechts	右	Prawo
+Up	Arriba	Acima	Haut	Nach oben	上	Góra
+Down	Abajo	Abaixo	Bas	Nach unten	下	Dół
+Left mouse	Botón izquierdo	Botão esquerdo	Bouton gauche	Linke Maustaste	マウス左ボタン	Lewy przycisk myszy
+Right mouse	Botón derecho	Botão direito	Bouton droit	Rechte Maustaste	マウス右ボタン	Prawy przycisk myszy
+Middle mouse	Botón central	Botão do meio	Bouton central	Mittlere Maustaste	マウス中央ボタン	Środkowy przycisk myszy
+On-screen keys	Teclas en pantalla	Teclas na tela	Touches à l’écran	Bildschirmtasten	画面上のキー	Klawisze ekranowe
+On-screen key size (sp)	Tamaño de teclas en pantalla (sp)	Tamanho das teclas na tela (sp)	Taille des touches à l’écran (sp)	Größe der Bildschirmtasten (sp)	画面キーのサイズ (sp)	Rozmiar klawiszy ekranowych (sp)
+On-screen controls opacity (%)	Opacidad de controles (%)	Opacidade dos controles (%)	Opacité des commandes (%)	Deckkraft der Bedienelemente (%)	操作ボタンの不透明度 (%)	Nieprzezroczystość przycisków (%)
+On-screen controls theme	Tema de controles en pantalla	Tema dos controles na tela	Thème des commandes à l’écran	Design der Bildschirmsteuerung	操作ボタンのテーマ	Motyw przycisków ekranowych
+System	Sistema	Sistema	Système	System	システム	Systemowy
+Dark	Oscuro	Escuro	Sombre	Dunkel	ダーク	Ciemny
+Light	Claro	Claro	Clair	Hell	ライト	Jasny
+PulseAudio playback	Reproducción PulseAudio	Reprodução PulseAudio	Lecture PulseAudio	PulseAudio-Wiedergabe	PulseAudio の再生	Odtwarzanie PulseAudio
+Enable guest audio (restart desktop to apply)	Activar audio de Debian (requiere reiniciar escritorio)	Ativar áudio do Debian (reinicie a sessão)	Activer le son Debian (redémarrer le bureau)	Debian-Audio aktivieren (Desktop neu starten)	Debian の音声を有効化（再起動が必要）	Włącz dźwięk Debiana (wymaga restartu pulpitu)
+Playback volume (%)	Volumen de reproducción (%)	Volume de reprodução (%)	Volume de lecture (%)	Wiedergabelautstärke (%)	再生音量 (%)	Głośność odtwarzania (%)
+Audio buffer (ms)	Búfer de audio (ms)	Buffer de áudio (ms)	Tampon audio (ms)	Audiopuffer (ms)	音声バッファー (ms)	Bufor dźwięku (ms)
+Reset	Restablecer	Redefinir	Réinitialiser	Zurücksetzen	リセット	Resetuj
+Reset display, mouse & audio settings	Restablecer pantalla, ratón y audio	Redefinir tela, mouse e áudio	Réinitialiser l’affichage, la souris et l’audio	Anzeige, Maus und Audio zurücksetzen	画面・マウス・音声設定をリセット	Zresetuj ustawienia obrazu, myszy i dźwięku
+Reset settings?	¿Restablecer ajustes?	Redefinir configurações?	Réinitialiser les paramètres ?	Einstellungen zurücksetzen?	設定をリセットしますか？	Zresetować ustawienia?
+Debian files and imported images are preserved.	Se conservan los archivos de Debian y las imágenes importadas.	Os arquivos do Debian e as imagens importadas são preservados.	Les fichiers Debian et les images importées sont conservés.	Debian-Dateien und importierte Abbilder bleiben erhalten.	Debian のファイルと読み込んだイメージは保持されます。	Pliki Debiana i zaimportowane obrazy zostaną zachowane.
+Enter a value between %1$d and %2$d	Introduce un valor entre %1$d y %2$d	Digite um valor entre %1$d e %2$d	Saisissez une valeur entre %1$d et %2$d	Geben Sie einen Wert zwischen %1$d und %2$d ein	%1$d～%2$d の値を入力してください	Wpisz wartość od %1$d do %2$d
+320–7680 × 240–4320, up to 16 megapixels	320–7680 × 240–4320, hasta 16 megapíxeles	320–7680 × 240–4320, até 16 megapixels	320–7680 × 240–4320, jusqu’à 16 mégapixels	320–7680 × 240–4320, bis zu 16 Megapixel	320～7680 × 240～4320、最大 1600 万画素	320–7680 × 240–4320, do 16 megapikseli
+Preparing language support. First launch may download packages; see the session log.	Preparando el idioma. El primer inicio puede descargar paquetes; consulta el registro.	Preparando o idioma. O primeiro início pode baixar pacotes; veja o registro da sessão.	Préparation de la langue. Le premier démarrage peut télécharger des paquets ; consultez le journal.	Sprachunterstützung wird vorbereitet. Beim ersten Start können Pakete geladen werden; siehe Sitzungsprotokoll.	言語を準備中です。初回はパッケージをダウンロードする場合があります。セッションログを確認してください。	Przygotowywanie języka. Pierwsze uruchomienie może pobrać pakiety; zobacz dziennik sesji.
+Language setup failed. Check the network and session log, then restart.	Falló la configuración del idioma. Revisa la red y el registro, y reinicia.	Falha na configuração do idioma. Verifique a rede e o registro e reinicie.	La configuration de la langue a échoué. Vérifiez le réseau et le journal, puis redémarrez.	Spracheinrichtung fehlgeschlagen. Netzwerk und Protokoll prüfen, dann neu starten.	言語の設定に失敗しました。ネットワークとセッションログを確認して再起動してください。	Konfiguracja języka nie powiodła się. Sprawdź sieć i dziennik sesji, a następnie uruchom ponownie.
+First launch will install missing audio packages automatically. Internet is required; setup progress appears in the session log.	El primer inicio instalará automáticamente los paquetes de audio que falten. Se necesita Internet; el progreso aparece en el registro.	O primeiro início instalará os pacotes de áudio ausentes. É preciso Internet; o progresso aparece no registro.	Le premier démarrage installera les paquets audio manquants. Internet est nécessaire ; la progression apparaît dans le journal.	Beim ersten Start werden fehlende Audiopakete installiert. Internet ist erforderlich; der Fortschritt steht im Protokoll.	初回は不足している音声パッケージを自動インストールします。インターネット接続が必要です。進行状況はログに表示されます。	Przy pierwszym uruchomieniu brakujące pakiety dźwięku zostaną zainstalowane automatycznie. Wymagany jest Internet; postęp widać w dzienniku.
+Image verified and ready. Tap Start. Existing Debian files are preserved.	Imagen verificada y lista. Pulsa Iniciar. Se conservan los archivos existentes de Debian.	Imagem verificada e pronta. Toque em Iniciar. Os arquivos existentes do Debian são preservados.	Image vérifiée et prête. Appuyez sur Démarrer. Les fichiers Debian existants sont conservés.	Abbild geprüft und bereit. Tippen Sie auf Starten. Bestehende Debian-Dateien bleiben erhalten.	イメージの検証が完了しました。「起動」を押してください。既存の Debian ファイルは保持されます。	Obraz zweryfikowany i gotowy. Naciśnij Uruchom. Istniejące pliki Debiana zostaną zachowane.
+Image import failed	Falló la importación de la imagen	Falha na importação da imagem	Échec de l’importation de l’image	Abbildimport fehlgeschlagen	イメージの読み込みに失敗	Import obrazu nie powiódł się
+No session log yet.	Aún no hay registro de sesión.	Ainda não há registro da sessão.	Aucun journal de session pour le moment.	Noch kein Sitzungsprotokoll vorhanden.	セッションログはまだありません。	Brak dziennika sesji.
+Start Debian from the main screen.	Inicia Debian desde la pantalla principal.	Inicie o Debian pela tela principal.	Démarrez Debian depuis l’écran principal.	Starten Sie Debian über den Hauptbildschirm.	メイン画面から Debian を起動してください。	Uruchom Debiana z ekranu głównego.
+Ready. Debian files are kept in app storage.	Listo. Los archivos de Debian se guardan en el almacenamiento de la app.	Pronto. Os arquivos do Debian ficam no armazenamento do app.	Prêt. Les fichiers Debian sont conservés dans le stockage de l’application.	Bereit. Debian-Dateien liegen im App-Speicher.	準備完了。Debian のファイルはアプリ内に保存されます。	Gotowe. Pliki Debiana są przechowywane w pamięci aplikacji.
+Start Debian	Iniciar Debian	Iniciar Debian	Démarrer Debian	Debian starten	Debian を起動	Uruchom Debiana
+Stop session	Detener sesión	Parar sessão	Arrêter la session	Sitzung beenden	セッションを停止	Zatrzymaj sesję
+View session log	Ver registro de sesión	Ver registro da sessão	Voir le journal de session	Sitzungsprotokoll anzeigen	セッションログを表示	Pokaż dziennik sesji
+The X11 desktop continues in the background. Slide to move the cursor, tap to click, double-tap and drag or use Drag to hold the left button. Two fingers scroll. Configure display, input and PulseAudio in Settings. Shared files appear at /sdcard.	El escritorio X11 sigue en segundo plano. Desliza para mover el cursor, toca para hacer clic y toca dos veces y arrastra, o usa Arrastrar para mantener el botón izquierdo. Desplaza con dos dedos. Configura pantalla, entrada y PulseAudio en Ajustes. Los archivos compartidos están en /sdcard.	A área de trabalho X11 continua em segundo plano. Deslize para mover o cursor, toque para clicar e toque duas vezes e arraste, ou use Arrastar para segurar o botão esquerdo. Role com dois dedos. Configure tela, entrada e PulseAudio em Configurações. Os arquivos compartilhados ficam em /sdcard.	Le bureau X11 reste actif en arrière-plan. Glissez pour déplacer le curseur, touchez pour cliquer, touchez deux fois puis glissez, ou utilisez Glisser pour maintenir le bouton gauche. Défilez à deux doigts. Configurez l’affichage, la saisie et PulseAudio dans les paramètres. Les fichiers partagés sont dans /sdcard.	Der X11-Desktop läuft im Hintergrund weiter. Wischen bewegt den Zeiger, Tippen klickt, doppeltes Tippen und Ziehen oder Ziehen hält die linke Taste. Zwei Finger scrollen. Anzeige, Eingabe und PulseAudio finden Sie in den Einstellungen. Gemeinsame Dateien liegen unter /sdcard.	X11 デスクトップはバックグラウンドで動作します。スライドでカーソル移動、タップでクリック、ダブルタップしてドラッグ、または「ドラッグ」で左ボタンを保持します。2 本指でスクロールできます。画面・入力・PulseAudio は設定で変更できます。共有ファイルは /sdcard にあります。	Pulpit X11 działa w tle. Przesuwaj palcem, aby poruszać kursorem; stuknij, aby kliknąć. Stuknij dwukrotnie i przeciągnij lub użyj Przeciągania, aby przytrzymać lewy przycisk. Przewijaj dwoma palcami. Obraz, sterowanie i PulseAudio skonfigurujesz w Ustawieniach. Udostępnione pliki znajdują się w /sdcard.
+Starting Debian. First start extracts the root filesystem.	Iniciando Debian. El primer inicio extrae el sistema de archivos.	Iniciando o Debian. O primeiro início extrai o sistema de arquivos.	Démarrage de Debian. Le premier démarrage extrait le système de fichiers.	Debian wird gestartet. Beim ersten Start wird das Dateisystem entpackt.	Debian を起動中。初回はルートファイルシステムを展開します。	Uruchamianie Debiana. Pierwsze uruchomienie rozpakowuje system plików.
+Stopping session…	Deteniendo sesión…	Parando sessão…	Arrêt de la session…	Sitzung wird beendet…	セッションを停止中…	Zatrzymywanie sesji…
+Waiting for native X11 desktop…	Esperando el escritorio X11 nativo…	Aguardando a área de trabalho X11 nativa…	En attente du bureau X11 natif…	Warten auf den nativen X11-Desktop…	ネイティブ X11 デスクトップを待機中…	Oczekiwanie na natywny pulpit X11…
+Debian session log	Registro de sesión de Debian	Registro da sessão Debian	Journal de session Debian	Debian-Sitzungsprotokoll	Debian セッションログ	Dziennik sesji Debiana
+Close	Cerrar	Fechar	Fermer	Schließen	閉じる	Zamknij
+Display, mouse & audio settings	Ajustes de pantalla, ratón y audio	Configurações de tela, mouse e áudio	Paramètres d’affichage, de souris et d’audio	Anzeige-, Maus- und Audioeinstellungen	画面・マウス・音声の設定	Ustawienia obrazu, myszy i dźwięku
+Import Debian image (.obb / .tar.xz)	Importar imagen de Debian (.obb / .tar.xz)	Importar imagem Debian (.obb / .tar.xz)	Importer une image Debian (.obb / .tar.xz)	Debian-Abbild importieren (.obb / .tar.xz)	Debian イメージを読み込む (.obb / .tar.xz)	Importuj obraz Debiana (.obb / .tar.xz)
+An image import is already in progress	Ya se está importando una imagen	Uma importação já está em andamento	Une importation d’image est déjà en cours	Ein Abbildimport läuft bereits	イメージの読み込み中です	Import obrazu już trwa
+Importing and checking Debian image…	Importando y verificando imagen de Debian…	Importando e verificando imagem Debian…	Importation et vérification de l’image Debian…	Debian-Abbild wird importiert und geprüft…	Debian イメージを読み込み・検証中…	Importowanie i sprawdzanie obrazu Debiana…
+Wait for image verification to finish, then tap Start.	Espera a que termine la verificación y pulsa Iniciar.	Aguarde a verificação da imagem e toque em Iniciar.	Attendez la fin de la vérification, puis appuyez sur Démarrer.	Warten Sie auf die Abbildprüfung und tippen Sie dann auf Starten.	イメージの検証が終わってから「起動」を押してください。	Poczekaj na zakończenie weryfikacji obrazu, a następnie naciśnij Uruchom.
+X11 server disconnected. Restart the desktop from the main screen.	Se desconectó el servidor X11. Reinicia el escritorio desde la pantalla principal.	O servidor X11 desconectou. Reinicie a área de trabalho pela tela principal.	Serveur X11 déconnecté. Redémarrez le bureau depuis l’écran principal.	X11-Server getrennt. Starten Sie den Desktop über den Hauptbildschirm neu.	X11 サーバーが切断されました。メイン画面からデスクトップを再起動してください。	Serwer X11 został rozłączony. Uruchom ponownie pulpit z ekranu głównego.
+Connecting to X11: %1$s	Conectando a X11: %1$s	Conectando ao X11: %1$s	Connexion à X11 : %1$s	Verbindung zu X11: %1$s	X11 に接続中: %1$s	Łączenie z X11: %1$s
+Debian desktop is running.	El escritorio de Debian está funcionando.	A área de trabalho Debian está em execução.	Le bureau Debian est en cours d’exécution.	Der Debian-Desktop läuft.	Debian デスクトップは実行中です。	Pulpit Debiana działa.
+Stopping Debian session…	Deteniendo sesión de Debian…	Parando a sessão Debian…	Arrêt de la session Debian…	Debian-Sitzung wird beendet…	Debian セッションを停止中…	Zatrzymywanie sesji Debiana…
+Starting Debian	Iniciando Debian	Iniciando o Debian	Démarrage de Debian	Debian wird gestartet	Debian を起動中	Uruchamianie Debiana
+Preparing Debian. First start extracts the desktop image…	Preparando Debian. El primer inicio extrae la imagen del escritorio…	Preparando o Debian. O primeiro início extrai a imagem da área de trabalho…	Préparation de Debian. Le premier démarrage extrait l’image du bureau…	Debian wird vorbereitet. Beim ersten Start wird das Desktop-Abbild entpackt…	Debian を準備中。初回はデスクトップイメージを展開します…	Przygotowywanie Debiana. Pierwsze uruchomienie rozpakowuje obraz pulpitu…
+Starting XFCE desktop…	Iniciando escritorio XFCE…	Iniciando a área de trabalho XFCE…	Démarrage du bureau XFCE…	XFCE-Desktop wird gestartet…	XFCE デスクトップを起動中…	Uruchamianie pulpitu XFCE…
+Debian session stopped.	Sesión de Debian detenida.	Sessão Debian encerrada.	Session Debian arrêtée.	Debian-Sitzung beendet.	Debian セッションを停止しました。	Sesja Debiana została zatrzymana.
+Checking external Debian image…	Verificando imagen externa de Debian…	Verificando imagem externa Debian…	Vérification de l’image Debian externe…	Externes Debian-Abbild wird geprüft…	外部 Debian イメージを検証中…	Sprawdzanie zewnętrznego obrazu Debiana…
+Extracting verified Debian image…	Extrayendo imagen verificada de Debian…	Extraindo imagem Debian verificada…	Extraction de l’image Debian vérifiée…	Geprüftes Debian-Abbild wird entpackt…	検証済み Debian イメージを展開中…	Rozpakowywanie zweryfikowanego obrazu Debiana…
+Debian session	Sesión de Debian	Sessão Debian	Session Debian	Debian-Sitzung	Debian セッション	Sesja Debiana
+Stop	Detener	Parar	Arrêter	Beenden	停止	Zatrzymaj

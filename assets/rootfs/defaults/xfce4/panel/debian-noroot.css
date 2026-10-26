@@ -1,0 +1,21 @@
+/* Keep the bottom taskbar legible with both light and dark GTK application themes. */
+.xfce4-panel.background,
+.xfce4-panel.background label,
+.xfce4-panel.background button {
+  color: #eeeeee;
+  text-shadow: none;
+}
+.xfce4-panel.background button {
+  background-image: none;
+  background-color: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.xfce4-panel.background button:hover {
+  background-color: #454545;
+}
+.xfce4-panel.background button:checked,
+.xfce4-panel.background button:active {
+  background-color: #3e3e3e;
+  border-color: #222222;
+}

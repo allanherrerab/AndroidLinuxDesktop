@@ -1,0 +1,37 @@
+/.gradle/
+/build/
+/dist/
+
+# Android Studio / IntelliJ project state and local IDE output.
+/.idea/
+*.iml
+/captures/
+/externalNativeBuild/
+/app/.cxx/
+/app/build/
+/local.properties
+
+# Python, native-build, and editor caches.
+**/__pycache__/
+*.py[cod]
+*.swp
+*.swo
+*~
+
+# Local reports, temporary downloads, and failed/partial writes.
+*.log
+*.tmp
+*.temp
+*.partial
+*.bak
+*.orig
+*.rej
+
+# OS metadata.
+.DS_Store
+Thumbs.db
+
+# Signing material and local credentials.
+*.keystore
+*.jks
+*.p12

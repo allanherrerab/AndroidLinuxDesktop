@@ -1,0 +1,141 @@
+#!/bin/sh
+set -eu
+
+[ ! -f /tmp/debian-noroot-session.conf ] || . /tmp/debian-noroot-session.conf
+
+export HOME="${HOME:-/home/debian}"
+export USER="${USER:-debian}"
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games"
+
+if ! command -v startxfce4 >/dev/null 2>&1; then
+    echo "XFCE is not installed. Run /root/debian-noroot-install-desktop.sh from a proot root shell."
+    exit 127
+fi
+if [ "${NOROOT_DISPLAY_BACKEND:-x11}" = "vnc" ] && ! command -v Xtigervnc >/dev/null 2>&1; then
+    echo "The packaged image is missing the desktop server. Rebuild with --desktop."
+    exit 127
+fi
+
+# Complete first-install language setup before starting localized applications.
+if [ "${NOROOT_REGION_READY:-0}" != "1" ] && [ -n "${NOROOT_LANG:-}" ]; then
+    echo locale_setup > /tmp/debian-noroot-progress
+    if ! /usr/local/bin/debian-noroot-ensure-locale "$NOROOT_LANG"; then
+        echo locale_failed > /tmp/debian-noroot-progress
+        echo "Language setup failed; check the network and session log, then start again."
+        exit 1
+    fi
+    export NOROOT_REGION_READY=1
+fi
+if [ -n "${NOROOT_LANG:-}" ]; then
+    export LANG="$NOROOT_LANG" LC_MESSAGES="$NOROOT_LANG" LC_TIME="$NOROOT_LANG"
+    export LANGUAGE="${NOROOT_LANGUAGE:-en}"
+fi
+
+export DISPLAY="${DISPLAY:-:0}"
+if [ "${NOROOT_DISPLAY_BACKEND:-x11}" = "x11" ]; then
+    export XAUTHORITY=/tmp/debian-noroot.Xauthority
+fi
+[ "${NOROOT_DISPLAY_BACKEND:-x11}" != "vnc" ] || export DISPLAY=:1
+export XDG_RUNTIME_DIR="/tmp/runtime-debian"
+export XDG_SESSION_TYPE=x11
+export XDG_CURRENT_DESKTOP=XFCE
+export LIBGL_ALWAYS_SOFTWARE=1
+export GALLIUM_DRIVER=llvmpipe
+export NO_AT_BRIDGE=1
+# Firefox cannot install a nested seccomp sandbox under Android's PRoot tracer.
+# The process continues to run inside the Android application's sandbox.
+export MOZ_FAKE_NO_SANDBOX=1
+# Audio setup and the panel share XFCE's bus, including on the first upgrade.
+if [ "${NOROOT_DBUS_SESSION:-0}" != "1" ]; then
+    unset SESSION_MANAGER DBUS_SESSION_BUS_ADDRESS
+    exec dbus-run-session -- /usr/bin/env NOROOT_DBUS_SESSION=1 "$0"
+fi
+umask 077
+mkdir -p "$XDG_RUNTIME_DIR" /tmp/.X11-unix /tmp/.ICE-unix
+chmod 700 "$XDG_RUNTIME_DIR"
+chmod 1777 /tmp/.X11-unix /tmp/.ICE-unix
+if [ ! -s /etc/machine-id ]; then
+    dbus-uuidgen --ensure=/etc/machine-id
+fi
+mkdir -p /var/lib/dbus
+ln -sf /etc/machine-id /var/lib/dbus/machine-id
+if [ "${NOROOT_DISPLAY_BACKEND:-x11}" = "vnc" ]; then
+    rm -f /tmp/debian-noroot-vnc.sock /tmp/.X1-lock /tmp/.X11-unix/X1
+fi
+
+/usr/local/bin/debian-noroot-setup-desktop
+
+server=
+session=
+pulse=
+cleanup() {
+    trap - EXIT HUP INT TERM
+    [ -z "$session" ] || kill "$session" 2>/dev/null || true
+    [ -z "$pulse" ] || kill "$pulse" 2>/dev/null || true
+    [ -z "$server" ] || kill "$server" 2>/dev/null || true
+    [ -z "$session" ] || wait "$session" 2>/dev/null || true
+    [ -z "$pulse" ] || wait "$pulse" 2>/dev/null || true
+    rm -f /tmp/debian-noroot-audio.sock /tmp/debian-noroot-pulse.sock
+    [ -z "$server" ] || wait "$server" 2>/dev/null || true
+    if [ "${NOROOT_DISPLAY_BACKEND:-x11}" = "vnc" ]; then
+    rm -f /tmp/debian-noroot-vnc.sock /tmp/.X1-lock /tmp/.X11-unix/X1
+fi
+}
+trap cleanup EXIT
+trap 'exit 0' HUP INT TERM
+
+# Only the explicit recovery/host-test backend starts a VNC server.
+# Android starts the embedded native X11 server before invoking this script.
+if [ "${NOROOT_DISPLAY_BACKEND:-x11}" = "vnc" ]; then
+    Xtigervnc :1 -geometry "${NOROOT_RESOLUTION:-1280x800}" -depth 24 -SecurityTypes None \
+        -rfbport -1 -rfbunixpath /tmp/debian-noroot-vnc.sock -rfbunixmode 0600 \
+        -nolisten tcp -localhost -AlwaysShared -AcceptSetDesktopSize=0 &
+    server=$!
+fi
+attempt=0
+until xdpyinfo -display "$DISPLAY" >/dev/null 2>&1; do
+    if { [ -n "$server" ] && ! kill -0 "$server" 2>/dev/null; } || [ "$attempt" -ge 30 ]; then
+        echo "Desktop X server did not become ready."
+        exit 1
+    fi
+    attempt=$((attempt + 1))
+    sleep 1
+done
+
+if [ -n "${NOROOT_KEYBOARD_LAYOUT:-}" ]; then
+    setxkbmap -layout "$NOROOT_KEYBOARD_LAYOUT" -variant "${NOROOT_KEYBOARD_VARIANT:-}"
+    xfconf-query -c keyboard-layout -p /Default/XkbDisable -n -t bool -s true
+fi
+
+# PulseAudio clients use the native protocol on a private Unix socket.
+# A monitor stream provides fixed-format PCM to Android AudioTrack, with no TCP.
+if [ "${NOROOT_AUDIO:-1}" = "1" ]; then
+    rm -f /tmp/debian-noroot-audio.sock /tmp/debian-noroot-pulse.sock
+    export PULSE_SERVER=unix:/tmp/debian-noroot-pulse.sock
+    export PULSE_LATENCY_MSEC=80
+    # Install older containers in the background while XFCE opens normally.
+    # Failure leaves the desktop usable and is retried on the next launch.
+    (
+        if ! /usr/local/bin/debian-noroot-ensure-audio; then
+            echo "Audio setup failed. Check the network and session log; startup will retry next launch."
+            exit 0
+        fi
+        /usr/local/bin/debian-noroot-setup-audio-panel || echo "Could not add the audio panel control; see session log."
+        exec pulseaudio --daemonize=no --exit-idle-time=-1 --disable-shm=yes --use-pid-file=no \
+            --disallow-exit --log-target=stderr -n \
+            --load="module-device-restore" \
+            --load="module-stream-restore" \
+            --load="module-native-protocol-unix socket=/tmp/debian-noroot-pulse.sock auth-anonymous=1" \
+            --load="module-null-sink sink_name=android rate=48000 channels=2 format=s16le" \
+            --load="module-simple-protocol-unix socket=/tmp/debian-noroot-audio.sock source=android.monitor record=true playback=false rate=48000 channels=2 format=s16le"
+    ) &
+    pulse=$!
+else
+    echo "PulseAudio playback is disabled in Settings."
+fi
+
+# PRoot emulates SysV IPC. XFCE uses a fresh user dbus session on every start.
+echo ready > /tmp/debian-noroot-progress
+xfce4-session &
+session=$!
+wait "$session"

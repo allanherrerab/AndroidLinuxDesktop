@@ -1,3 +1,0 @@
-#!/bin/sh
-
-/usr/local/bin/sudo /bin/sh -l "$@"

@@ -1,0 +1,47 @@
+#!/bin/sh
+set -eu
+language=${1:-en_US.UTF-8}
+case "$language" in
+    en_US.UTF-8) pack=; code=en ;;
+    es_ES.UTF-8) pack=firefox-esr-l10n-es-es; code=es ;;
+    pt_BR.UTF-8) pack=firefox-esr-l10n-pt-br; code=pt ;;
+    fr_FR.UTF-8) pack=firefox-esr-l10n-fr; code=fr ;;
+    de_DE.UTF-8) pack=firefox-esr-l10n-de; code=de ;;
+    ja_JP.UTF-8) pack=firefox-esr-l10n-ja; code=ja ;;
+    pl_PL.UTF-8) pack=firefox-esr-l10n-pl; code=pl ;;
+    *) echo "Unsupported Debian locale: $language"; exit 1 ;;
+esac
+locale_ready() {
+    [ "$(LC_ALL="$language" locale charmap 2>/dev/null)" = UTF-8 ] || return 1
+    if [ "$code" != en ]; then
+        [ -f "/usr/share/locale/$code/LC_MESSAGES/xfce4-panel.mo" ] || return 1
+        [ "$(dpkg-query -W -f='${Status}' "$pack" 2>/dev/null)" = 'install ok installed' ] || return 1
+    fi
+    if [ "$code" = ja ]; then
+        [ "$(dpkg-query -W -f='${Status}' fonts-noto-cjk 2>/dev/null)" = 'install ok installed' ] || return 1
+    fi
+}
+locale_ready && exit 0
+[ "$(id -u)" = 0 ] || exec sudo -n -- /bin/sh "$0" "$language"
+export DEBIAN_FRONTEND=noninteractive
+exec 9>/tmp/debian-noroot-locale-install.lock
+flock -x 9
+locale_ready && exit 0
+# Debian slim excludes translations. Remove only that exclusion, preserving
+# unrelated dpkg configuration and the user's files.
+for config in /etc/dpkg/dpkg.cfg.d/*; do
+    [ -f "$config" ] || continue
+    sed -i '\|^path-exclude[ =].*/usr/share/locale/|d' "$config"
+done
+apt-get -o APT::Sandbox::User=root -o Acquire::Retries=1 -o Acquire::https::Timeout=20 update
+set -- locales
+[ -z "$pack" ] || set -- "$@" "$pack"
+[ "$code" != ja ] || set -- "$@" fonts-noto-cjk
+apt-get -o APT::Sandbox::User=root install -y --no-install-recommends "$@"
+if [ "$code" != en ] && [ ! -f "/usr/share/locale/$code/LC_MESSAGES/xfce4-panel.mo" ]; then
+    apt-get -o APT::Sandbox::User=root install -y --no-install-recommends --reinstall \
+        xfce4-session xfce4-panel xfce4-settings xfce4-terminal xfdesktop4-data \
+        xfwm4 thunar-data libxfce4ui-common libxfce4util-common libgtk-3-common
+fi
+localedef --no-archive -i "${language%%.*}" -f UTF-8 "$language"
+locale_ready
