@@ -1,4 +1,4 @@
-# Development and repair log
+# Development and repair log 
 
 What it took to get a modern Debian Noroot building and running:Started from the original Android 4-era (2020) APK, with [pelya/debian-noroot](https://github.com/pelya/debian-noroot) as upstream. When APK and source disagreed, the APK won , it's what shipped. Decompiled Java and resources gave the option inventory. The replacement already launched before feature recreation started; keeping it and any existing Debian installation intact was a hard constraint the whole way. Active code went under `app/src/main/`, guest scripts under `assets/rootfs/`, tooling under `tools/` and `tests/`. Build junk in `build/`, distributables in `dist/`. The original APK became `references/apk/debian-noroot-2020.apk`; old native sources, Buster image scripts, patches, and previous runtimes went to `references/legacy-source/`, with uncertain material preserved under `references/xfce-panel-source/` and `references/development-notes/` instead of being deleted on a hunch. Legacy material stayed until recreation was accepted, and there's no itemized deletion inventory in the checkout, so this log doesn't invent one.
 
