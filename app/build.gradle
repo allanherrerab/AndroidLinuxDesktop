@@ -89,7 +89,7 @@ android {
     packaging {
         jniLibs {
             useLegacyPackaging true
-            keepDebugSymbols += ['**/libproot.so', '**/libproot-loader.so', '**/libXlorie.so']
+            keepDebugSymbols += ['**/libproot.so', '**/libproot-loader.so', '**/libXlorie.so', '**/libvirgl_server.so']
         }
     }
 

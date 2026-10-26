@@ -178,9 +178,9 @@ int core_begin_logs(const char *directory, const char *header)
 {
     int parent = open(directory, O_RDONLY | O_DIRECTORY | O_CLOEXEC | O_NOFOLLOW);
     if (parent < 0) return errno;
-    const char *names[] = {"desktop.log", "x11.log"};
+    const char *names[] = {"desktop.log", "x11.log", "virgl.log"};
     int error = 0;
-    for (size_t i = 0; i < 2 && !error; i++) {
+    for (size_t i = 0; i < sizeof(names) / sizeof(names[0]) && !error; i++) {
         int fd = openat(parent, names[i], O_WRONLY | O_CREAT | O_TRUNC | O_CLOEXEC | O_NOFOLLOW, 0600);
         if (fd < 0) { error = errno; break; }
         if (i == 0) error = write_all(fd, header, strlen(header));

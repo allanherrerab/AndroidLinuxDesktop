@@ -34,16 +34,16 @@ Este es un proyecto independiente, no un lanzamiento oficial de Debian.org. **No
 - **Controles de pantalla.** Presets de resolución y tamaños personalizados, escalado ajustar/estirar/entero/personalizado, filtrado, orientación, pantalla completa y zoom del 100–400%. Los botones pequeños del escritorio siguen siendo botones pequeños del escritorio, pero tienes opciones.
 - **Controles de ratón y teclado.** Touchpad relativo o entrada táctil absoluta, bloqueo de arrastre, clic derecho/central, desplazamiento con dos dedos, modificadores, F1–F12, reasignación de teclas de hardware y pegado del portapapeles. Se incluyen ratón/lápiz óptico físico y controles por giroscopio; la cobertura de pruebas de hardware sigue siendo limitada.
 - **Configuración regional.** Elige los idiomas de la app y de Debian por separado, más la distribución del teclado invitado y la zona horaria. Se incluyen inglés, español, portugués brasileño, francés, alemán, japonés y polaco, junto con locales UTF-8, traducciones de XFCE/Firefox y fuentes japonesas.
-- **Un APK pequeño y una imagen Debian mucho menos pequeña.** La app pesa unos 2 MB; la imagen unos 324 MiB. El Linux de escritorio no se convirtió de repente en pelusa de bolsillo.
+- **Un APK pequeño y una imagen Debian mucho menos pequeña.** El APK ocupa unos pocos MB; la imagen externa, varios cientos de MiB. El Linux de escritorio no se convirtió de repente en pelusa de bolsillo.
 Consulta [PARITY.md](PARITY.md) para ver qué coincide con la app antigua, qué cambió y qué opciones antiguas no han llegado al corte.
 
 ## Antes de invitar a Debian a tu teléfono
 Tal como están las cosas, necesitarás un **dispositivo Android ARM de 64 bits con Android 8.0 o superior**. La compilación actual apunta a Android 16/API 36. No se incluyen otras arquitecturas de CPU, pero deberían funcionar siempre que crees un tarball de rootfs para ellas. También necesitarás suficiente almacenamiento interno para el archivo importado, el sistema extraído y los archivos temporales de extracción. El escritorio instalado ocupa considerablemente más espacio que la descarga (alrededor de 1.5 GB en total).
 **Hay varias limitaciones**: algunas heredadas de la app original, otras corregidas como mejoras:
-- **No puede estropear tu dispositivo Android**, porque es una app Android normal y bien portada, que no necesita acceso root.
+- **Se aplican los permisos de Android.** No necesita root, pero el permiso de archivos compartidos permite que los programas de Debian los modifiquen. Conserva copias de seguridad y ejecuta software de confianza.
 - **Sin acceso root de Android.** `sudo` dentro de Debian usa la identidad root emulada de PRoot. Puede instalar paquetes, pero no habilitará el modo monitor en tu tarjeta Wi-Fi de Android ni rooteará tu dispositivo.
 - **Soporte de audio mejorado.** La app original no tenía audio funcional; la compilación actual enruta PulseAudio hacia la API AudioTrack de Android. Las teclas de volumen del teléfono, el volumen de la app y los controles de volumen de XFCE funcionan todos. Consulta [Lo que obtienes](#lo-que-obtienes).
-- **Sin soporte OpenGL.** La GPU de Android presenta el escritorio, pero las aplicaciones Linux invitadas no obtienen VirGL ni OpenGL acelerado por hardware. Ajusta tus ambiciones de juego en consecuencia (Minecraft Java funcionará, GTA V ciertamente no).
+- **Aceleración OpenGL experimental.** Selecciona **Gráficos de Debian → VirGL (GPU de Android)** en Ajustes y reinicia el escritorio. Mesa Virpipe envía OpenGL al renderizador Android EGL/GLES incluido. El renderizado por software sigue siendo el predeterminado y la alternativa automática si falla la prueba de arranque. Se verificaron engranajes sobre la Xclipse 940 del S24 FE; no garantiza otras GPU, juegos ni rendimiento, y no proporciona Vulkan directo. Firefox conserva sus valores de renderizado por software.
 - **Sin acceso privilegiado al hardware.** Debian comparte el kernel del teléfono. No puedes reparticionar la tarjeta SD, grabar CD-ROM, ejecutar `ping` en crudo ni olfatear tu red, etc.
 - **Sin capacidad de mover la app a la tarjeta SD**, así que necesitarás mucho almacenamiento interno.
 - **Los servidores que requieren puertos inferiores a 1024 no arrancarán**, porque todos necesitan funciones root. Siéntete libre de arrancar Apache en el puerto 8080 en su lugar.
@@ -99,6 +99,22 @@ Selecciona **Iniciar Debian** para usar tu instalación existente. Una actualiza
 Las instalaciones más antiguas añaden automáticamente los paquetes de audio e idioma faltantes cuando es necesario. Eso requiere acceso a Internet; las imágenes nuevas ya los contienen. Consulta **Ver registro de sesión** si la configuración se atasca o una descarga falla, luego reinicia la sesión para reintentar.
 
 ## Manejar un escritorio con los pulgares
+Para leer archivos del teléfono desde Debian, guarda tu trabajo y detén la
+sesión. Abre **Ajustes → Archivos de Android → Administrar acceso a archivos del
+dispositivo** y concede el permiso del sistema. Después inicia Debian: los
+archivos aparecen en `/storage/emulated/0`, incluida su carpeta `Download`, y los
+volúmenes extraíbles accesibles bajo `/storage`. `/sdcard` conserva la carpeta
+compartida de la app. El permiso es opcional, no hace falta para importar la
+imagen y también permite modificar archivos compartidos en Android 11 o posterior.
+Android puede reiniciar la app al cambiarlo; los datos protegidos de otras apps
+siguen restringidos. PRoot no evita esos permisos.
+
+Las imágenes nuevas incluyen Mesa para el arranque sin conexión. Las instalaciones
+antiguas añaden los paquetes faltantes al seleccionar VirGL por primera vez.
+Su prueba de arranque dura ocho segundos y exige un renderizador VirGL no basado
+en software y fotogramas completados. Consulta el registro de sesión y
+`/tmp/debian-noroot-graphics-probe.log` si se activa la alternativa por software.
+
 Desliza un dedo para mover el puntero y toca para hacer clic. Doble toque y arrastrar mantiene pulsado el botón izquierdo del ratón; **Arrastrar** te da un enganche explícito. Los botones de la barra de herramientas manejan los clics derecho y central. Dos dedos desplazan.
 La barra de herramientas se desplaza horizontalmente. Si un botón parece faltar, intenta desplazarte antes de decidir que lo he ocultado por despecho.
 - **Zoom:** ampliación del 100–400%.
@@ -108,7 +124,7 @@ La barra de herramientas se desplaza horizontalmente. Si un botón parece faltar
 - **Volumen:** ajusta el volumen multimedia del teléfono y la ganancia de reproducción de la app. Dentro de Debian, usa el plugin del panel PulseAudio o `pavucontrol` para el volumen y silencio del invitado/ aplicación. Las teclas de volumen de hardware controlan el volumen multimedia del teléfono.
 **Ajustes de pantalla, ratón y audio** contiene los modos de entrada, el tiempo de clic, la velocidad/aceleración, las opciones de entrada de hardware, los controles por giroscopio y la apariencia de los atajos. El búfer de audio es de 200 ms por defecto y se puede ajustar entre 20–500 ms.
 Puedes reabrir la configuración regional desde la pantalla principal o **Ajustes**. El idioma de la app cambia inmediatamente; el idioma de Debian, el teclado y la zona horaria se aplican en la siguiente sesión. La mayoría de los cambios de pantalla/entrada se aplican al volver de Ajustes. El dibujo de compatibilidad necesita un reinicio de sesión.
-Salir de la pantalla del escritorio mantiene la sesión ejecutándose en segundo plano. **Ver registro de sesión** muestra la sesión actual o la más reciente. Iniciar una nueva sesión borra tanto los registros de Debian como los de X11 nativo, así que guarda cualquier cosa útil antes de reiniciar. Reabrir un escritorio en ejecución conserva los registros de esa sesión.
+Salir de la pantalla del escritorio mantiene la sesión ejecutándose en segundo plano. **Ver registro de sesión** muestra la sesión actual o la más reciente. Iniciar una nueva sesión borra los registros de Debian, X11 y VirGL, así que guarda cualquier cosa útil antes de reiniciar. Reabrir un escritorio en ejecución conserva los registros de esa sesión.
 
 ## Cómo funciona este artefacto
 El shell gráfico de Debian se lanza usando PRoot, la solución definitiva de virtualización Linux: [http://proot.me/. Luego renderiza a través del motor X11 integrado de la app; una mejora sobre el original, que lanzaba la app separada de servidor X XSDL y requería que la instalaras y configuraras por separado.](http://proot.me/ "http://proot.me/")
@@ -136,6 +152,7 @@ Desde la raíz del repositorio:
  ./tools/build/build-host-proot.sh
  python3 tools/build/build-runtime.py
  python3 tools/build/prepare-x11.py
+ python3 tools/build/prepare-virgl.py
  make rootfs
  make test
  make app DEBUG=1

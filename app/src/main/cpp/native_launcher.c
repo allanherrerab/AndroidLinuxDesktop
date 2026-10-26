@@ -121,7 +121,7 @@ static int append_bind(char **args, size_t *count, const char *host,
 
 static jint run_desktop(const char *app_files, const char *rootfs,
                         const char *proot, const char *runtime,
-                        const char *shared)
+                        const char *shared, const char *host_storage)
 {
     char loader[4096];
     char log_path[4096];
@@ -175,10 +175,16 @@ static jint run_desktop(const char *app_files, const char *rootfs,
     char bind_storage[8192];
     char bind_proc_version[8192];
     char bind_shm[8192];
+    char bind_host_storage[8192];
     if (append_bind(args, &count, shared, "/sdcard", bind_storage, sizeof(bind_storage)) != 0 ||
         append_bind(args, &count, shm_dir, "/dev/shm", bind_shm, sizeof(bind_shm)) != 0 ||
         append_bind(args, &count, version_path, "/proc/version",
                     bind_proc_version, sizeof(bind_proc_version)) != 0) {
+        free_environment(environment, environment_count, allocated_start);
+        return -1;
+    }
+    if (host_storage != NULL && append_bind(args, &count, host_storage, "/storage",
+                                            bind_host_storage, sizeof(bind_host_storage)) != 0) {
         free_environment(environment, environment_count, allocated_start);
         return -1;
     }
@@ -194,6 +200,10 @@ static jint run_desktop(const char *app_files, const char *rootfs,
     // GLib and libc explicitly at the Android-selected guest timezone data.
     args[count++] = "TZ=:/etc/localtime";
     args[count++] = "TERM=xterm-256color";
+    args[count++] = "NOROOT_DISPLAY_BACKEND=x11";
+    args[count++] = "DISPLAY=:0";
+    args[count++] = "XAUTHORITY=/tmp/debian-noroot.Xauthority";
+    if (host_storage != NULL) args[count++] = "NOROOT_ANDROID_STORAGE=/storage";
     args[count++] = "/usr/local/bin/debian-noroot-startx";
     args[count] = NULL;
 
@@ -322,7 +332,8 @@ Java_org_debiannoroot_runtime_NativeBridge_runDesktop(JNIEnv *env, jclass type,
                                               jstring rootfs_path,
                                               jstring proot_path,
                                               jstring runtime_path,
-                                              jstring shared_path)
+                                              jstring shared_path,
+                                              jstring host_storage_path)
 {
     (void)type;
     const char *app_files = (*env)->GetStringUTFChars(env, app_files_path, NULL);
@@ -330,14 +341,17 @@ Java_org_debiannoroot_runtime_NativeBridge_runDesktop(JNIEnv *env, jclass type,
     const char *proot = (*env)->GetStringUTFChars(env, proot_path, NULL);
     const char *runtime = (*env)->GetStringUTFChars(env, runtime_path, NULL);
     const char *shared = (*env)->GetStringUTFChars(env, shared_path, NULL);
+    const char *host_storage = host_storage_path == NULL ? NULL : (*env)->GetStringUTFChars(env, host_storage_path, NULL);
     jint result = -1;
-    if (app_files != NULL && rootfs != NULL && proot != NULL && runtime != NULL && shared != NULL)
-        result = run_desktop(app_files, rootfs, proot, runtime, shared);
+    if (app_files != NULL && rootfs != NULL && proot != NULL && runtime != NULL && shared != NULL &&
+        (host_storage_path == NULL || host_storage != NULL))
+        result = run_desktop(app_files, rootfs, proot, runtime, shared, host_storage);
     if (app_files != NULL) (*env)->ReleaseStringUTFChars(env, app_files_path, app_files);
     if (rootfs != NULL) (*env)->ReleaseStringUTFChars(env, rootfs_path, rootfs);
     if (proot != NULL) (*env)->ReleaseStringUTFChars(env, proot_path, proot);
     if (runtime != NULL) (*env)->ReleaseStringUTFChars(env, runtime_path, runtime);
     if (shared != NULL) (*env)->ReleaseStringUTFChars(env, shared_path, shared);
+    if (host_storage != NULL) (*env)->ReleaseStringUTFChars(env, host_storage_path, host_storage);
     return result;
 }
 

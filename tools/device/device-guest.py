@@ -16,6 +16,7 @@ def main():
     parser.add_argument('--serial', default=os.environ.get('ANDROID_SERIAL'))
     parser.add_argument('--adb', default='adb')
     parser.add_argument('--package', default='org.debiannoroot')
+    parser.add_argument('--host-storage', action='store_true', help='Mirror the /storage bind; Android must have granted access')
     parser.add_argument('command', nargs=argparse.REMAINDER)
     args = parser.parse_args()
     command = args.command
@@ -46,6 +47,7 @@ def main():
         '-b', '/dev', '-b', '/proc', '-b', '/sys', '-b', '/system',
         '-b', files + '/shared-memory:/dev/shm',
         '-b', files + '/proc-version:/proc/version',
+        *(['-b', '/storage:/storage'] if args.host_storage else []),
         '/usr/bin/env', '-i', 'HOME=/home/debian', 'USER=debian', 'LOGNAME=debian',
         'LANG=C.UTF-8', 'SHELL=/bin/bash',
         'PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin',

@@ -12,6 +12,8 @@ The original APK and its upstream attribution are retained.
 | liblzma | [XZ Utils v5.8.4](https://github.com/tukaani-project/xz/tree/v5.8.4) | CMake builds the archive extraction library from a SHA-256-pinned source archive. Preserve the upstream per-file license notices. |
 | Debian | [Official Debian Trixie ARM64 OCI image](https://hub.docker.com/_/debian) | Base manifest/layers pinned in `rootfs.lock.json`; desktop packages installed from Debian's signed repositories. Individual package copyright and license files remain in `/usr/share/doc`. |
 | Termux:X11 | [Commit 7e5f5c5](https://github.com/termux/termux-x11/tree/7e5f5c5c9226e2cdab392b2efba91bc4bd86463e) | Pinned unmodified ARM64 Xorg-based native server/renderer from the matching upstream artifact. GPL-3.0; upstream components retain their licenses. |
+| VirGL renderer | [virglrenderer 1.3.0](https://gitlab.freedesktop.org/virgl/virglrenderer/-/tree/virglrenderer-1.3.0) | Android EGL/GLES vtest server; static linkage, private Unix socket, no DRM/GBM/Vulkan backend. MIT. Selected pinned Termux Android patches include MIT texture-decompression code. |
+| libepoxy | [1.5.10](https://github.com/anholt/libepoxy/tree/1.5.10) | Statically linked into the Android VirGL server for EGL/GLES dispatch. MIT. |
 | PulseAudio | [Debian Trixie package](https://packages.debian.org/trixie/pulseaudio) | Guest native protocol, null sink, and simple-protocol monitor transport. Debian copyright/license files remain in the image. |
 | TigerVNC | [Debian Trixie package](https://packages.debian.org/trixie/tigervnc-standalone-server) | Guest X server used only by the explicit Linux regression harness; not the Android production backend. Preserve Debian's package copyright notices. |
 | Firefox ESR | [Debian Trixie package](https://packages.debian.org/trixie/firefox-esr) | Guest web browser with software rendering defaults. Debian's package copyright notices remain in the image. |
@@ -44,3 +46,15 @@ per-component license notices when distributing the combined application.
 The nightly URL is mutable, but its expected SHA-256 is fixed. A later nightly
 is rejected; use the cached pinned artifact or deliberately update/revalidate
 the source/artifact pin together. This build does not silently take a new engine.
+
+`tools/build/prepare-virgl.py` builds `libvirgl_server.so` (a PIE executable named
+for Android native-library packaging) from checksum-pinned virglrenderer and
+libepoxy sources. The selected Android patches come from Termux packages commit
+`9c4e57f8e1d8525ea9267572351a15449de34292`; the recipe adapts the GBM patch's Meson
+context to 1.3.0 with checked replacements. ANGLE-specific patches are not used.
+The source archives, original patches, static libraries and build tree remain in
+`build/graphics/`. `dist/graphics.manifest.json` records URLs, checksums and the
+binary identity. Preserve these sources and the build recipe with redistributed
+binaries. Notices are in `licenses/virglrenderer-MIT.txt`, `libepoxy-MIT.txt` and
+`VirGL-Android-texture-MIT.txt`. Pinned Meson, PyYAML and pkgconf are build tools;
+they are not shipped inside the APK.

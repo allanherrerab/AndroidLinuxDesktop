@@ -11,7 +11,7 @@ struct session_test {
 static void *start_mock(void *argument)
 {
     struct session_test *test = argument;
-    test->result = run_desktop(test->root, test->root, test->executable, test->root, test->root);
+    test->result = run_desktop(test->root, test->root, test->executable, test->root, test->root, NULL);
     return NULL;
 }
 
@@ -20,6 +20,24 @@ int main(int argc, char **argv)
     if (argc > 1 && strcmp(argv[1], "--link2symlink") == 0) {
         for (int i = 1; i < argc; i++) puts(argv[i]);
         assert(getenv("PROOT_NO_SECCOMP") == NULL);
+        int x11 = 0, display = 0, auth = 0;
+        for (int i = 1; i < argc; i++) {
+            x11 += strcmp(argv[i], "NOROOT_DISPLAY_BACKEND=x11") == 0;
+            display += strcmp(argv[i], "DISPLAY=:0") == 0;
+            auth += strcmp(argv[i], "XAUTHORITY=/tmp/debian-noroot.Xauthority") == 0;
+            assert(strcmp(argv[i], "NOROOT_DISPLAY_BACKEND=vnc") != 0);
+        }
+        assert(x11 == 1 && display == 1 && auth == 1);
+        const char *storage = getenv("NOROOT_TEST_STORAGE");
+        int bound_storage = 0, storage_env = 0, app_share = 0;
+        for (int i = 1; i < argc; i++) {
+            if (storage != NULL && strcmp(argv[i], storage) == 0) bound_storage++;
+            storage_env += strcmp(argv[i], "NOROOT_ANDROID_STORAGE=/storage") == 0;
+            const char *colon = strrchr(argv[i], ':');
+            if (colon != NULL && strcmp(colon, ":/sdcard") == 0) app_share++;
+        }
+        assert(app_share == 1);
+        assert(storage == NULL ? storage_env == 0 : (storage_env == 1 && bound_storage == 1));
         puts("mock ready");
         fflush(stdout);
         const char *code = getenv("NOROOT_TEST_EXIT");
@@ -49,9 +67,11 @@ int main(int argc, char **argv)
     close(loader);
 
     assert(setenv("PROOT_NO_SECCOMP", "1", 1) == 0);
+    assert(setenv("NOROOT_DISPLAY_BACKEND", "vnc", 1) == 0);
+    assert(setenv("DISPLAY", ":99", 1) == 0);
     Java_org_debiannoroot_runtime_NativeBridge_resetSession(NULL, NULL);
     Java_org_debiannoroot_runtime_NativeBridge_stopDesktop(NULL, NULL);
-    assert(run_desktop(root, root, argv[0], root, root) == -ECANCELED);
+    assert(run_desktop(root, root, argv[0], root, root, NULL) == -ECANCELED);
 
     Java_org_debiannoroot_runtime_NativeBridge_resetSession(NULL, NULL);
     struct session_test test = {root, argv[0], -999};
@@ -77,7 +97,15 @@ int main(int argc, char **argv)
 
     Java_org_debiannoroot_runtime_NativeBridge_resetSession(NULL, NULL);
     assert(setenv("NOROOT_TEST_EXIT", "7", 1) == 0);
-    assert(run_desktop(root, root, argv[0], root, root) == 7);
+    assert(run_desktop(root, root, argv[0], root, root, NULL) == 7);
+    char host_storage[4096], expected_storage[8192];
+    snprintf(host_storage, sizeof(host_storage), "%s/storage", root);
+    assert(mkdir(host_storage, 0700) == 0);
+    snprintf(expected_storage, sizeof(expected_storage), "%s:/storage", host_storage);
+    assert(setenv("NOROOT_TEST_STORAGE", expected_storage, 1) == 0);
+    assert(run_desktop(root, root, argv[0], root, root, host_storage) == 7);
+    unsetenv("NOROOT_TEST_STORAGE");
+    assert(rmdir(host_storage) == 0);
     unsetenv("NOROOT_TEST_EXIT");
     const char *files[] = {"desktop.log", "proc-version", "libproot-loader.so"};
     for (size_t i = 0; i < sizeof(files) / sizeof(files[0]); i++) {

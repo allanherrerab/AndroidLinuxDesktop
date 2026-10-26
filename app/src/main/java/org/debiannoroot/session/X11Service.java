@@ -58,7 +58,11 @@ public final class X11Service extends Service {
         try {
             java.io.FileDescriptor log=Os.open(new File(getFilesDir(),"x11.log").getAbsolutePath(),
                     android.system.OsConstants.O_WRONLY|android.system.OsConstants.O_CREAT|android.system.OsConstants.O_TRUNC,0600);
-            try { Os.dup2(log,1);Os.dup2(log,2); } finally { Os.close(log); }
+            try {
+                Os.dup2(log,1);Os.dup2(log,2);
+                byte[] header="Display engine: embedded Termux:X11; process=:x11; transport=Unix/Binder; TCP=disabled\n".getBytes(java.nio.charset.StandardCharsets.US_ASCII);
+                Os.write(log,header,0,header.length);
+            } finally { Os.close(log); }
             File tmp=new File(root,"tmp");
             if(!tmp.isDirectory()&&!tmp.mkdirs())throw new IllegalStateException("Cannot create X11 runtime folder");
             new File(tmp,".X11-unix").mkdirs();

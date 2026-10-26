@@ -2,6 +2,15 @@
     <string name="ui_cancel">キャンセル</string>
     <string name="ui_save">保存</string>
     <string name="ui_done">完了</string>
+    <string name="ui_guest_graphics_restart_desktop_to_apply">Debian のグラフィックス（適用にはデスクトップを再起動）</string>
+    <string name="ui_software_rendering">ソフトウェア描画</string>
+    <string name="ui_virgl_android_gpu">VirGL（Android GPU）</string>
+    <string name="ui_android_files">Android のファイル</string>
+    <string name="ui_device_file_access_is_allowed">端末のファイルへのアクセスが許可されています。</string>
+    <string name="ui_device_file_access_is_not_allowed">端末のファイルへのアクセスが許可されていません。</string>
+    <string name="ui_allow_shared_storage_access_to_read_device_files_at_storage_emulated_0_and_removable_volumes_under_storage_android_restrictions_still_apply_all_files_access_also_allows_changes_to_shared_files_restart_the_desktop_after_granting_access_sdcard_remains_the_app_shared_folder">共有ストレージへのアクセスを許可すると、/storage/emulated/0 の端末ファイルと /storage 配下の外部ストレージを読み取れます。Android の制限は引き続き適用されます。すべてのファイルへのアクセスは共有ファイルの変更も許可します。許可後にデスクトップを再起動してください。/sdcard は引き続きアプリの共有フォルダーです。</string>
+    <string name="ui_manage_device_file_access">端末のファイルへのアクセスを管理</string>
+    <string name="ui_save_guest_work_and_stop_the_session_before_changing_file_access_android_may_restart_the_app">ファイルへのアクセスを変更する前に Debian の作業を保存し、セッションを停止してください。Android がアプリを再起動する場合があります。</string>
     <string name="ui_back">戻る</string>
     <string name="ui_settings">設定</string>
     <string name="ui_keyboard">キーボード</string>

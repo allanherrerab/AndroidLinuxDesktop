@@ -36,16 +36,16 @@ This is an independent project, not an official Debian.org release. It is **not*
 - **Display controls.** Resolution presets and custom sizes, fit/stretch/integer/custom scaling, filtering, orientation, fullscreen and 100–400% zoom. Tiny desktop buttons remain tiny desktop buttons, but you have options.  
 - **Mouse and keyboard controls.** Relative touchpad or absolute touch input, drag lock, right/middle click, two-finger scrolling, modifiers, F1–F12, hardware key remapping and clipboard paste. Physical mouse/stylus and gyro controls are included; hardware testing coverage is still limited.  
 - **Regional settings.** Choose app and Debian languages separately, plus the guest keyboard layout and timezone. English, Spanish, Brazilian Portuguese, French, German, Japanese and Polish are included, along with UTF-8 locales, XFCE/Firefox translations and Japanese fonts.  
-- **A small APK and a much less small Debian image.** The app is about 2 MB; the image is about 324 MiB. Desktop Linux did not suddenly become pocket lint.  
+- **A small APK and a much less small Debian image.** The APK is a few MB; the external image is several hundred MiB. Desktop Linux did not suddenly become pocket lint.
 See [PARITY.md](PARITY.md) for what matches the old app, what changed, and which old options haven't made the cut.
   
 ## Before you invite Debian into your phone
 As it stands you will need a 64-bit ARM **Android device running Android 8.0 or newer**. The current build targets Android 16/API 36. Other CPU architectures aren't included, but should work provided you create a rootfs tarball for them. You'll also need enough internal storage for the imported archive, extracted system and temporary extraction files. The installed desktop takes considerably more space than the download (around 1.5 GB total).  
 **There are several limitations**: some carried over from the original app, some fixed as improvements:  
-- **It cannot mess up your Android device**, because it's a regular well-behaved Android app, which does not need root access.  
+- **Android permissions still apply.** No root access is required, but granting shared-file access lets guest programs modify those files. Back up important data and run trusted guest software.
 - **No Android root access.** `sudo` inside Debian uses PRoot's emulated root identity. It can install packages, but will not enable monitor mode on your Android Wi-Fi card or root your device.  
 - **Audio support improved.** The original app had no working audio; the current build routes PulseAudio into Android's AudioTrack API. Phone volume keys, app volume and XFCE's volume controls all work. See [What you get](#what-you-get).
-- **No OpenGL support.** Android's GPU presents the desktop, but guest Linux applications don't get VirGL or hardware-accelerated OpenGL. Adjust your gaming ambitions accordingly (Minecraft Java will run, GTA V certainly not).  
+- **Experimental OpenGL acceleration.** Select **Guest graphics → VirGL (Android GPU)** in Settings and restart the desktop. Mesa Virpipe forwards guest OpenGL to a bundled Android EGL/GLES renderer. Software rendering remains the default and automatic fallback. The S24 FE gears test reports VirGL on its Xclipse 940; this is not universal GPU/application compatibility, Vulkan passthrough or a performance guarantee. Firefox retains its software-rendering defaults.
 - **No privileged hardware access.** Debian shares the phone's kernel. You cannot re-partition the SD card, burn CD-ROMs, run raw `ping` or sniff your network, etc.  
 - **No ability to move the app to the SD card**, so you'll need a lot of internal storage.  
 - **Servers that requiere ports lower than 1024 won't start**, because they all need root features. Feel free to start Apache in port 8080 instead.
@@ -100,6 +100,23 @@ Once the build dependencies and initial preparation are in place, this is the us
 Select **Start Debian** to use your existing installation. An ordinary APK update does not need another OBB transfer or rootfs import. Debian files, your home directory and saved settings stay in place.  
 **Keep the same signing key across updates.** Don't uninstall the app or clear its data to update it; that is a very efficient way to turn "keep my files" into "where did my files go?"  
 Older installations automatically add missing audio and language packages when needed. That needs Internet access; fresh images already contain them. Check **View session log** if setup stalls or a download fails, then restart the session to retry.  
+
+Older installations also install missing Mesa utilities when VirGL is first
+selected; the new image includes them for offline startup. VirGL startup runs
+an eight-second, small mapped-window rendering check and falls back to software
+if the server, GPU or workload fails. No OpenGL version is artificially forced.
+
+To access phone files from Debian, save guest work and stop the session, then
+open **Settings → Android files → Manage device file access**. Grant Android's
+all-files access (Android 11+) or read-storage permission (older Android) and
+start Debian again. Shared files appear at `/storage/emulated/0`, including
+`/storage/emulated/0/Download`; removable volumes use `/storage/<volume-id>`.
+The existing `/sdcard` path remains the app's shared folder. This grant is
+optional and is not needed to import the image. All-files access also permits
+modifying shared files; guest applications inherit that authority. Android can
+restart the app when the grant changes. Other apps' private `Android/data`
+directories remain restricted; PRoot does not bypass Android permissions. See
+[Android's all-files access rules](https://developer.android.com/training/data-storage/manage-all-files).
   
 ## Operating a desktop with your thumbs
 Slide a finger to move the pointer and tap to click. Double-tap and drag holds the left mouse button; **Drag** gives you an explicit latch. Toolbar buttons handle right and middle clicks. Two fingers scroll.  
@@ -111,7 +128,7 @@ The toolbar scrolls horizontally. If a button seems missing, try scrolling befor
 - **Volume:** adjusts phone media volume and app playback gain. Inside Debian, use the PulseAudio panel plugin or `pavucontrol` for guest/application volume and mute. Hardware volume keys control phone media volume.  
 **Display, mouse & audio settings** contains the input modes, click timing, speed/acceleration, hardware input options, gyro controls and shortcut appearance. The audio buffer defaults to 200 ms and can be set from 20–500 ms.  
 You can reopen regional settings from the main screen or **Settings**. App language changes immediately; Debian language, keyboard and timezone apply next session. Most display/input changes apply when you return from Settings. Compatibility drawing needs a session restart.  
-Leaving the desktop screen keeps the session running in the background. **View session log** shows the current or most recent session. Starting a new session clears both the Debian and native X11 logs, so save anything useful before restarting. Reopening a running desktop keeps that session's logs.  
+Leaving the desktop screen keeps the session running in the background. **View session log** shows the current or most recent session. Starting a new session clears the Debian, native X11 and VirGL logs, so save anything useful before restarting. Reopening a running desktop keeps that session's logs.
   
 ## How this contraption works
 The Debian graphical shell is launched using PRoot, the ultimate Linux virtualization solution: [http://proot.me/. It then renders through the app's built-in X11 engine; An improvement over the original, which launched the separate XSDL X server app and required you to install and configure it separately.](http://proot.me/ "http://proot.me/")  
@@ -119,11 +136,16 @@ The Debian graphical shell is launched using PRoot, the ultimate Linux virtualiz
 Android application  
     ├─ PRoot → Debian Trixie → XFCE / Firefox / other Linux applications  
     ├─ Embedded X11 → native Android surface  
+    ├─ Optional Mesa Virpipe → private Unix socket → VirGL → Android EGL/GLES
     └─ PulseAudio monitor PCM → Unix socket → Android AudioTrack API  
    
 ```  
 The app verifies the root filesystem image and extracts it into private storage. PRoot handles filesystem translation and the emulated guest identity. X11 runs in a separate Android process with per-session authentication and TCP disabled; audio sockets also stay in private storage. Startup refreshes the app's guest helpers without replacing your installed rootfs or home directory.  
-VNC is kept for explicit host regression tests. Android uses native X11.  
+Android launches the embedded Termux:X11 server in its `:x11` process and displays
+it directly through a native `SurfaceView`. The guest launcher accepts only an
+external X11 server; it cannot start VNC. The optional host VNC launcher lives in
+`tests/support/host-vnc-startx.sh` and is copied only into temporary host test
+installations. TigerVNC remains installed in the image for those tests.
 Firefox's nested sandbox is disabled for PRoot compatibility; Firefox still runs within the Android app's sandbox and privileges. PRoot itself is not a separate VM or kernel security boundary.  
   
 ## Build from source
@@ -139,6 +161,7 @@ From the repository root:
  ./tools/build/build-host-proot.sh  
  python3 tools/build/build-runtime.py  
  python3 tools/build/prepare-x11.py  
+ python3 tools/build/prepare-virgl.py
  make rootfs  
  make test  
  make app DEBUG=1  
@@ -206,6 +229,19 @@ make test
    
 ```  
 Host smoke tests run ARM64 guest applications and check PCM audio transport under emulation. They don't prove that Android's surface, AudioTrack, lifecycle or physical input works. Those need a phone, preferably one somebody is willing to test on.  
+
+To audit the display in an installed debug or release APK, unlock the phone and
+open its Debian desktop, then run:
+
+```sh
+python3 tools/smoke/smoke-device-x11.py --serial DEVICE_SERIAL
+```
+
+This checks the installed APK's X11 classes/library, the running `:x11` process,
+XFCE under the same app UID, the native display surface and absence of an app-owned
+VNC server. It saves `build/device-x11.json` and a screenshot. Inspect the screenshot
+and exercise mouse/keyboard input separately; process checks alone do not validate
+pixels or input. APK builds also reject a packaged VNC client or guest launcher.
 For slower emulation, `smoke-desktop.py --timeout-scale 2` doubles readiness deadlines without skipping assertions. Failed runs save a `-failure.png` frame when available. A disk-backed `TMPDIR` avoids extracting the test rootfs into a small RAM-backed temporary filesystem.  
 For lifecycle checks on an unlocked device with an initialized debug app, save guest work first:  
 ```  
@@ -213,6 +249,14 @@ python3 tools/smoke/smoke-device-lifecycle.py --serial DEVICE_SERIAL
    
 ```  
 This stops/restarts sessions, checks rotation/return, rootfs/home preservation and log replacement, then restores Android rotation preferences. Results go to `build/device-lifecycle.json`. To run an isolated guest command without typing into somebody's terminal, use `tools/device/device-guest.py --serial DEVICE_SERIAL -- PROGRAM ARGS...`.  
+
+With VirGL enabled in a running debug/acceptance installation,
+`python3 tools/smoke/smoke-device-graphics.py --package org.debiannoroot.acceptance`
+checks the session's renderer process, inherited XFCE environment and a bounded
+mapped GL workload with positive completed frames. It saves the renderer/frame
+log and JSON evidence. Optional `--storage-fixture /storage/emulated/0/Download/TEST_FILE`
+reads and hashes only that caller-owned fixture after the system grant; it does
+not browse personal files. This is a compatibility smoke, not a GPU benchmark.
 For first-run import/extraction tests:  
 ```  
 gradle :app:assembleAcceptance :app:lintAcceptance  
@@ -221,7 +265,7 @@ gradle :app:assembleAcceptance :app:lintAcceptance
 This builds a separate debug app, `org.debiannoroot.acceptance`, under `build/app/outputs/apk/acceptance/`, with its own rootfs and preferences. Its `org.debiannoroot.FocusProbeActivity` requests temporary media focus for audio checks. These test components aren't included in the normal APK.  
   
 ## It broke. Now what?
-Start with **View session log**. It contains Debian startup output and the native X11 log. A warning about who owns `/tmp/.X11-unix` isn't, by itself, evidence that the sky has fallen.  
+Start with **View session log**. It contains Debian startup output, the native X11 log and `virgl.log`. A warning about who owns `/tmp/.X11-unix` isn't, by itself, evidence that the sky has fallen. VirGL's guest renderer/frame probe is saved in `/tmp/debian-noroot-graphics-probe.log`; `glxinfo -B` can report X_GetImage BadMatch on this path even when mapped applications render correctly.
 - **Image won't extract:** check that the APK and image match, and that internal storage isn't full.  
 - **No sound:** check phone media volume, app gain, guest mute and package-setup progress. Three volume controls means three opportunities for silence.  
 - **Black screen or miserable performance:** [Process.md records previously diagnosed failures and fixes. Include logs when reporting a new one.](Process.md "Process.md")  

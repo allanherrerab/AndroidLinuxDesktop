@@ -100,7 +100,7 @@ changes in checked-in source paths, not only installed images or build trees.
     Preserve viewport/input mapping across scaling, crop, zoom and rotation.
 11. DesktopService owns persisted session phase. Reopening a connected desktop
     must not set phase=starting in the launcher; CONNECTED may not fire again.
-12. New sessions replace desktop.log and x11.log through SessionLogs.begin and
+12. New sessions replace desktop.log, x11.log and virgl.log through SessionLogs.begin and
     native O_TRUNC logging. Reopening/rotating an active desktop is the same
     session and must not clear its logs. Do not add session-log archives.
 13. PRoot is not a VM/kernel security boundary and guest sudo is emulated.

@@ -172,7 +172,7 @@ Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
 """)
     assets = PROJECT / "assets/rootfs"
     bin_assets = assets / "bin"
-    for name in ("debian-noroot-startx", "debian-noroot-setup-desktop", "debian-noroot-ensure-audio", "debian-noroot-setup-audio-panel", "debian-noroot-ensure-locale"):
+    for name in ("debian-noroot-startx", "debian-noroot-setup-desktop", "debian-noroot-ensure-audio", "debian-noroot-setup-audio-panel", "debian-noroot-ensure-locale", "debian-noroot-ensure-graphics", "debian-noroot-probe-graphics"):
         destination = root / "usr/local/bin" / name
         destination.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(bin_assets / name, destination)
@@ -184,7 +184,7 @@ Signed-By: /usr/share/keyrings/debian-archive-keyring.gpg
     shutil.copyfile(PROJECT / "assets/rootfs/install/install-desktop.sh",
                     root / "root/debian-noroot-install-desktop.sh")
     (root / "root/debian-noroot-install-desktop.sh").chmod(0o755)
-    for name in ("dev", "proc", "sys", "run", "tmp", "sdcard", "mnt"):
+    for name in ("dev", "proc", "sys", "run", "tmp", "sdcard", "storage", "mnt"):
         (root / name).mkdir(parents=True, exist_ok=True)
     (root / "tmp").chmod(0o1777)
 

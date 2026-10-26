@@ -13,7 +13,8 @@ apt-get -o APT::Sandbox::User=root install -y --no-install-recommends \
     locales fonts-noto-cjk firefox-esr-l10n-es-es firefox-esr-l10n-pt-br \
     firefox-esr-l10n-fr firefox-esr-l10n-de firefox-esr-l10n-ja firefox-esr-l10n-pl \
     fonts-dejavu-core librsvg2-common xterm procps sudo fakechroot fakeroot \
-    pulseaudio pulseaudio-utils libasound2-plugins xfce4-pulseaudio-plugin pavucontrol x11-xserver-utils
+    pulseaudio pulseaudio-utils libasound2-plugins xfce4-pulseaudio-plugin pavucontrol x11-xserver-utils \
+    libgl1-mesa-dri libglx-mesa0 mesa-utils
 # Restore translations when upgrading an older slim-based image.
 if [ ! -f /usr/share/locale/es/LC_MESSAGES/xfce4-panel.mo ]; then
     apt-get -o APT::Sandbox::User=root install -y --no-install-recommends --reinstall \

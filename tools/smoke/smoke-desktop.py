@@ -87,13 +87,15 @@ def main():
             raise RuntimeError(error.value.decode())
         # Mirror the service's refresh of app-owned launch code and defaults.
         assets = PROJECT / "assets/rootfs"
-        for name in ("debian-noroot-startx", "debian-noroot-setup-desktop", "debian-noroot-ensure-audio", "debian-noroot-setup-audio-panel", "debian-noroot-ensure-locale"):
+        for name in ("debian-noroot-startx", "debian-noroot-setup-desktop", "debian-noroot-ensure-audio", "debian-noroot-setup-audio-panel", "debian-noroot-ensure-locale", "debian-noroot-ensure-graphics", "debian-noroot-probe-graphics"):
             shutil.copyfile(assets / "bin" / name, root / "usr/local/bin" / name)
             (root / "usr/local/bin" / name).chmod(0o755)
         shutil.copytree(assets / "defaults", root / "usr/share/debian-noroot/desktop-defaults",
                         dirs_exist_ok=True)
         shutil.copyfile(assets / "bin/debian-noroot-firefox.js",
                         root / "usr/lib/firefox-esr/defaults/pref/debian-noroot.js")
+        shutil.copyfile(PROJECT / "tests/support/host-vnc-startx.sh", root / "tmp/host-vnc-startx.sh")
+        (root / "tmp/host-vnc-startx.sh").chmod(0o755)
         uid, gid = os.getuid(), os.getgid()
         for filename, entry in (("passwd", f"debian:x:{uid}:{gid}:Debian:/home/debian:/bin/bash\n"),
                                 ("group", f"debian:x:{gid}:\n"),
@@ -165,9 +167,9 @@ def main():
                    "-i", f"{uid}:{gid}", "-q", str(Path(args.qemu).resolve()), "-r", str(root), "-w", "/home/debian",
                    "-b", "/dev", "-b", f"{shm}:/dev/shm", "-b", "/proc", "-b", "/sys", "-b", f"{shared}:/sdcard",
                    "/usr/bin/env", "-i", "USER=debian",
-                   "LOGNAME=debian", "HOME=/home/debian", "NOROOT_DISPLAY_BACKEND=vnc", "LANG=C.UTF-8", "TZ=:/etc/localtime", "SHELL=/bin/bash",
+                   "LOGNAME=debian", "HOME=/home/debian", "LANG=C.UTF-8", "TZ=:/etc/localtime", "SHELL=/bin/bash",
                    "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
-                   "/usr/local/bin/debian-noroot-startx"]
+                   "/tmp/host-vnc-startx.sh"]
         log_path = build / "session.log"
         preflight = subprocess.run(command[:-1] + ["/usr/bin/sudo", "-n", "id", "-u"],
                                    text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=30)

@@ -19,8 +19,12 @@ display-server app.
 The display now uses an Android surface instead of the old SDL renderer. That
 means the old color-depth and separate-rendering-thread switches don't have
 matching settings here. Compatibility drawing is available for devices that
-need it. Linux applications still use software 3D rendering; displaying the
-desktop through Android's GPU does not give them hardware-accelerated OpenGL.
+need it. Software 3D remains the default. Since 2026-10-26, an experimental
+VirGL setting also forwards guest OpenGL through Mesa Virpipe to Android
+EGL/GLES, separately from the X11 presentation renderer. A mapped gears test
+rendered on the Galaxy S24 FE's Xclipse 940; other GPUs and applications still
+need testing. Startup falls back to software if its rendering probe fails.
+This addition does not establish parity with the old SDL renderer.
 
 Debian still runs through PRoot and shares Android's kernel. Using `sudo` inside
 Debian gives you an emulated root identity, not root access to your phone.
@@ -69,6 +73,12 @@ The Debian image is a separate OBB or tar.xz file. You select it with Android's
 file picker, and the app checks that it matches the APK before extracting it into
 private storage. Later launches reuse that installation.
 
+Optional Android shared-storage access exposes `/storage/emulated/0` and other
+accessible volumes under `/storage` after a system permission grant and session
+restart. `/sdcard` retains its app-folder mapping. Android all-files access also
+allows writes; guest programs have the app's permissions, not extra isolation.
+Other apps' protected directories remain inaccessible.
+
 The old download/mirror choices, custom data-directory setting and startup-command
 editor aren't available. There isn't a hosted image-download service at present.
 See the [README](README.md) for building, installing and updating the app.
@@ -78,7 +88,7 @@ keyboard layout and timezone. English, Spanish, Brazilian Portuguese, French,
 German, Japanese and Polish are included.
 
 Leaving the desktop screen keeps the session running in the background. Starting
-a new session replaces the previous desktop and X11 logs; returning to a running
+a new session replaces the previous desktop, X11 and VirGL logs; returning to a running
 session keeps its logs.
 
 ## What still needs checking

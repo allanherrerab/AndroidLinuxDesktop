@@ -2,6 +2,15 @@
     <string name="ui_cancel">Cancel</string>
     <string name="ui_save">Save</string>
     <string name="ui_done">Done</string>
+    <string name="ui_guest_graphics_restart_desktop_to_apply">Guest graphics (restart desktop to apply)</string>
+    <string name="ui_software_rendering">Software rendering</string>
+    <string name="ui_virgl_android_gpu">VirGL (Android GPU)</string>
+    <string name="ui_android_files">Android files</string>
+    <string name="ui_device_file_access_is_allowed">Device file access is allowed.</string>
+    <string name="ui_device_file_access_is_not_allowed">Device file access is not allowed.</string>
+    <string name="ui_allow_shared_storage_access_to_read_device_files_at_storage_emulated_0_and_removable_volumes_under_storage_android_restrictions_still_apply_all_files_access_also_allows_changes_to_shared_files_restart_the_desktop_after_granting_access_sdcard_remains_the_app_shared_folder">Allow shared storage access to read device files at /storage/emulated/0 and removable volumes under /storage. Android restrictions still apply. All-files access also allows changes to shared files. Restart the desktop after granting access. /sdcard remains the app shared folder.</string>
+    <string name="ui_manage_device_file_access">Manage device file access</string>
+    <string name="ui_save_guest_work_and_stop_the_session_before_changing_file_access_android_may_restart_the_app">Save guest work and stop the session before changing file access: Android may restart the app.</string>
     <string name="ui_back">Back</string>
     <string name="ui_settings">Settings</string>
     <string name="ui_keyboard">Keyboard</string>

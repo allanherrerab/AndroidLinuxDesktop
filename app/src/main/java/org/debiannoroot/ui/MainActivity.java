@@ -117,7 +117,7 @@ public final class MainActivity extends LocalizedActivity {
         } else {
             // API 26–32 has no NOT_EXPORTED flag. A signature permission protects
             // this legacy registration; API 33+ uses the explicit flag above.
-            registerReceiver(statusReceiver, filter, "org.debiannoroot.permission.INTERNAL", null);
+            registerReceiver(statusReceiver, filter, getPackageName()+".permission.INTERNAL", null);
         }
         status.setText(t(getSharedPreferences("session", MODE_PRIVATE).getString("status",
                 getString(R.string.ready))));
@@ -167,7 +167,7 @@ public final class MainActivity extends LocalizedActivity {
 
     private void showLog() {
         StringBuilder text = new StringBuilder();
-        for(String name:new String[]{"desktop.log","x11.log"}) {
+        for(String name:new String[]{"desktop.log","x11.log","virgl.log"}) {
             java.io.File file = new java.io.File(getFilesDir(), name);
             try (java.io.RandomAccessFile log = new java.io.RandomAccessFile(file, "r")) {
                 long offset = Math.max(0, log.length() - 65536);

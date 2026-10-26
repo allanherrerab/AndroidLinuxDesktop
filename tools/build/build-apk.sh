@@ -43,6 +43,7 @@ if [ ! -f "$PROJECT_DIR/dist/rootfs.manifest.json" ] || [ "$REBUILD_ROOTFS" = 1 
     "$SCRIPT_DIR/build-rootfs.sh" --desktop
 fi
 python3 "$SCRIPT_DIR/prepare-x11.py"
+python3 "$SCRIPT_DIR/prepare-virgl.py"
 python3 "$SCRIPT_DIR/../verify/verify-artifacts.py"
 cd "$PROJECT_DIR"
 gradle --no-daemon ":app:assemble$TASK_TYPE" ":app:lint$TASK_TYPE"

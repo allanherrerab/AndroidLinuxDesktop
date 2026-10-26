@@ -2,6 +2,15 @@
     <string name="ui_cancel">Anuluj</string>
     <string name="ui_save">Zapisz</string>
     <string name="ui_done">Gotowe</string>
+    <string name="ui_guest_graphics_restart_desktop_to_apply">Grafika Debiana (uruchom ponownie pulpit, aby zastosować)</string>
+    <string name="ui_software_rendering">Renderowanie programowe</string>
+    <string name="ui_virgl_android_gpu">VirGL (GPU Androida)</string>
+    <string name="ui_android_files">Pliki Androida</string>
+    <string name="ui_device_file_access_is_allowed">Dostęp do plików urządzenia jest dozwolony.</string>
+    <string name="ui_device_file_access_is_not_allowed">Dostęp do plików urządzenia nie jest dozwolony.</string>
+    <string name="ui_allow_shared_storage_access_to_read_device_files_at_storage_emulated_0_and_removable_volumes_under_storage_android_restrictions_still_apply_all_files_access_also_allows_changes_to_shared_files_restart_the_desktop_after_granting_access_sdcard_remains_the_app_shared_folder">Zezwól na dostęp do pamięci współdzielonej, aby czytać pliki w /storage/emulated/0 i nośniki wymienne w /storage. Ograniczenia Androida nadal obowiązują. Dostęp do wszystkich plików pozwala też zmieniać pliki współdzielone. Po przyznaniu dostępu uruchom ponownie pulpit. /sdcard pozostaje folderem współdzielonym aplikacji.</string>
+    <string name="ui_manage_device_file_access">Zarządzaj dostępem do plików urządzenia</string>
+    <string name="ui_save_guest_work_and_stop_the_session_before_changing_file_access_android_may_restart_the_app">Zapisz pracę w Debianie i zatrzymaj sesję przed zmianą dostępu do plików: Android może ponownie uruchomić aplikację.</string>
     <string name="ui_back">Wstecz</string>
     <string name="ui_settings">Ustawienia</string>
     <string name="ui_keyboard">Klawiatura</string>

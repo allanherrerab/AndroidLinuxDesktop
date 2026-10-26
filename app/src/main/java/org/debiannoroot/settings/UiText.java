@@ -10,6 +10,15 @@ public final class UiText {
             case "Cancel": return context.getString(R.string.ui_cancel);
             case "Save": return context.getString(R.string.ui_save);
             case "Done": return context.getString(R.string.ui_done);
+            case "Guest graphics (restart desktop to apply)": return context.getString(R.string.ui_guest_graphics_restart_desktop_to_apply);
+            case "Software rendering": return context.getString(R.string.ui_software_rendering);
+            case "VirGL (Android GPU)": return context.getString(R.string.ui_virgl_android_gpu);
+            case "Android files": return context.getString(R.string.ui_android_files);
+            case "Device file access is allowed.": return context.getString(R.string.ui_device_file_access_is_allowed);
+            case "Device file access is not allowed.": return context.getString(R.string.ui_device_file_access_is_not_allowed);
+            case "Allow shared storage access to read device files at /storage/emulated/0 and removable volumes under /storage. Android restrictions still apply. All-files access also allows changes to shared files. Restart the desktop after granting access. /sdcard remains the app shared folder.": return context.getString(R.string.ui_allow_shared_storage_access_to_read_device_files_at_storage_emulated_0_and_removable_volumes_under_storage_android_restrictions_still_apply_all_files_access_also_allows_changes_to_shared_files_restart_the_desktop_after_granting_access_sdcard_remains_the_app_shared_folder);
+            case "Manage device file access": return context.getString(R.string.ui_manage_device_file_access);
+            case "Save guest work and stop the session before changing file access: Android may restart the app.": return context.getString(R.string.ui_save_guest_work_and_stop_the_session_before_changing_file_access_android_may_restart_the_app);
             case "Back": return context.getString(R.string.ui_back);
             case "Settings": return context.getString(R.string.ui_settings);
             case "Keyboard": return context.getString(R.string.ui_keyboard);

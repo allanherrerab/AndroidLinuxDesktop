@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.Date;
 import org.debiannoroot.runtime.NativeCore;
 
-/** Keep only the current session's guest and native X11 output. */
+/** Keep only the current session's guest, native X11 and VirGL output. */
 final class SessionLogs {
     private SessionLogs() {}
 

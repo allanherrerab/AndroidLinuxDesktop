@@ -38,7 +38,7 @@ DIST_OUTPUTS := dist/debian-noroot-debug.apk dist/debian-noroot-debug.apk.instal
 	dist/debian-rootfs.tar.xz dist/debian-rootfs.tar.xz.installing \
 	dist/main.2.org.debiannoroot.obb \
 	dist/main.2.org.debiannoroot.obb.installing dist/rootfs.manifest.json \
-	dist/runtime dist/runtime.manifest.json dist/x11.manifest.json
+	dist/runtime dist/runtime.manifest.json dist/x11.manifest.json dist/graphics.manifest.json
 
 .PHONY: app debug release rootfs tools install-tools clean test help
 

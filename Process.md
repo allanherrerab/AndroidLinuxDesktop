@@ -1,5 +1,148 @@
 # Development and repair log
-# Development and repair log
+
+## 2026-10-26: experimental VirGL and Android shared files
+
+Added an opt-in Guest graphics setting (software remains the default). A pinned
+virglrenderer 1.3.0/libepoxy 1.5.10 Android PIE server uses native EGL/GLES and a
+session-private mode-0600 vtest socket. The APK bundles it as
+libvirgl_server.so; the service owns startup, cancellation, logging and shutdown.
+Mesa Virpipe in Debian forwards OpenGL commands over that socket. There is no
+direct DRM access, Vulkan passthrough or forced OpenGL-version override.
+Firefox's existing software-rendering defaults are preserved. Selected pinned
+Termux Android patches, source archives, static libraries, licenses and the
+build recipe/manifest are retained; the pinned Termux:X11 engine is unchanged.
+
+The initial glxinfo probe failed with X_GetImage BadMatch on the S24 FE. A mapped
+glxgears workload nevertheless rendered visible gears and identified
+`virgl (ANGLE ((Samsung Xclipse 940) on Vulkan 1.3.279))`, Mesa 25.0.7, OpenGL 2.1.
+Startup now runs an eight-second bounded small mapped workload, accepting only
+a non-software VirGL renderer AND a completed positive frame sample. A timeout
+without frames, a software renderer or a crashed workload is not success.
+Probe failure falls back to llvmpipe. Host regressions cover those decisions;
+the device smoke checks the session-owned server, XFCE's inherited Virpipe
+environment, a real frame sample and an optional caller-owned storage fixture.
+Frame counts here establish rendering, not a speed comparison or gaming claim.
+
+Added optional Android all-files access (API 30+) / read-storage permission
+(API 26–29) through system Settings/runtime permission UI. Only granted sessions
+bind host /storage at guest /storage. The existing app-owned /sdcard mapping is
+unchanged. Settings explains Android restrictions and the all-files grant's
+write authority; guests inherit the app's permissions. Android can terminate
+the app on a permission change, so the UI warns to save work and stop first.
+Other apps' protected data remains restricted. Removable storage support is the
+same /storage binding, not a separately measured physical-volume test.
+
+The new image includes Mesa GLX/DRI and mesa-utils for offline startup. Startup
+refreshes app-owned graphics helpers in older initialized roots and installs
+missing packages only when VirGL is selected, without replacing rootfs/home.
+Settings/help has all seven translations. New sessions truncate virgl.log along
+with desktop.log and x11.log; View session log includes it.
+
+Android checks used only the disposable acceptance package on the Galaxy S24 FE,
+Android 16, 4096-byte pages, with the normal desktop stopped. The older image
+installed missing Mesa utilities automatically. adb install -r preserved the
+ready-rootfs inode/size/timestamp and a guest-home marker. VirGL startup and a
+second mapped workload passed, XFCE inherited GALLIUM_DRIVER=virpipe, and the
+socket mode was 0600. Unlinking only the test session's socket before guest
+startup exercised fallback: XFCE ran with GALLIUM_DRIVER=llvmpipe. Normal stop
+left no acceptance-owned renderer or guest process. Shared-file tests read only
+a 61-byte caller-created Downloads fixture: denied before the grant, readable
+after the Settings grant. Production PRoot arguments contained /storage:/storage
+and retained the original app-folder /sdcard binding. The normal release-signed
+app, its grants and its installed rootfs/home were not changed.
+
+Host checks passed: make test (22 Python checks, C/JNI/Java and native launcher
+tests), full-image asset/package verification, and release assembly/lint, all
+34 pinned X11 signatures, APK/image pairing and native 16 KB ELF alignment.
+Final acceptance assembly/lint, ABI and full-image/APK/OBB checks passed too;
+adb install -r of that final APK again preserved the ready marker and home file.
+The ARM64 host PulseAudio smoke passed 521,448 bytes of 48 kHz stereo s16le PCM.
+Two earlier runs hit the socket-readiness deadline with temporary paths longer
+than the AF_UNIX pathname limit; using a short disk-backed temporary directory
+passed without changing the deadline or assertions. Those failed outputs remain
+available. This is transport validation, not Android audio-quality acceptance.
+The final full host desktop smoke passed 349 decoded frames, keyboard/terminal
+input, emulated sudo, shared-folder writes, panel customization preservation,
+Thunar/terminal/Firefox launchers, Firefox's offline page and 787,364 bytes of
+stereo PCM. These are QEMU/VNC regressions, not substitutes for the separate
+Android VirGL checks above. The phone relocked during final host builds, so a
+further run after the last metadata/translation rebuild was not performed.
+The disposable acceptance app/data and verified test Downloads fixture were
+removed afterward; APK/image and evidence remain available for recreation.
+Release output remains unsigned. Logs/screenshots and intermediate failures are
+retained under build/graphics/. Other GPUs, Android 8–10 permissions, physical
+removable volumes, broader GL applications and 16 KB-page runtime acceptance
+remain untested. No release was published or code pushed for this work.
+
+## 2026-10-26: enforce and audit Android's native X11 path
+
+Audited the signed daily release and the installed APK before changing the
+display path. Their bytes matched. Both contained DesktopActivity, LorieView,
+X11Service and the pinned libXlorie.so, with no RfbConnection client class.
+On the S24 FE, the normal installation rendered XFCE through its :x11 process
+and native SurfaceView with no app-owned Xtigervnc process. A long press opened
+the XFCE context menu. The native implementation was already present; this
+change does not claim to introduce an absent server or replace a measured VNC
+transport on that installation.
+
+Removed the dormant VNC server branch from the packaged guest launcher. The
+Android native launcher now explicitly supplies NOROOT_DISPLAY_BACKEND=x11,
+DISPLAY=:0 and its private XAUTHORITY. Other backend values fail instead of
+starting another server. Host VNC startup now lives in
+tests/support/host-vnc-startx.sh, copied only into temporary host test roots;
+the existing TigerVNC package is retained for those tests. The pinned native
+engine, separate process, main-Looper startup, authentication, disabled TCP and
+native input ABI are unchanged. X11 startup logs identify the actual engine.
+
+Added DEX class-definition checks to artifact verification, requiring the X11
+adapters and rejecting a host RFB client or VNC startup branch in an APK.
+smoke-device-x11.py audits an installed release/debug APK, its pinned engine,
+same-UID XFCE/X11 processes and native surface, and saves a screenshot for
+visual inspection. It does not claim that a process/layer check proves correct
+pixels or input. Application-specific internal permission names allow the
+acceptance build to coexist with a differently signed normal release.
+
+Host/build validation passed: make test (18 Python checks plus the existing C,
+JNI, Java and native lifecycle/network tests); refreshed image overlay and full
+image verification; release and acceptance assembly/lint, all 34 pinned JNI
+signatures for both variants, and APK/OBB checks including native ELF alignment.
+The host desktop smoke passed 308 decoded frames, keyboard/terminal input,
+emulated sudo, shared writes, panel migration/customization, terminal/Thunar/
+Firefox launchers and Firefox's offline page. PulseAudio transported 774,320
+bytes of 48 kHz stereo s16le PCM. These are host regression results, separate
+from Android display acceptance below.
+
+Android acceptance passed on the Galaxy S24 FE, Android 16, 4096-byte pages,
+using a separately installed acceptance APK with its own freshly verified and
+extracted image. xdpyinfo reported X.Org 21.1.99 on :0; access without the
+session cookie failed, as did a TCP display connection. The cookie file had
+mode 0600. The installed-APK audit matched the pinned engine, found the :x11
+process, same-UID XFCE and native SurfaceView, and found no app-owned VNC
+server. Screenshots were visually inspected. An isolated xev window received
+mouse press/release, pointer motion across 33 distinct guest coordinates, and
+F1/F12 press/release sent through Android's input/view path.
+
+Updated that acceptance installation with adb install -r after correcting a
+diagnostic write: Android's System.err goes to logcat, so the engine header now
+uses the actual x11.log file descriptor. The ready-rootfs inode/size/timestamp
+and a guest-home marker survived the update; the final APK started XFCE again,
+passed the installed-APK/surface audit and produced the expected log header.
+Release/acceptance assembly/lint, JNI ABI and artifact checks passed again for
+this final Java change. The normal release-signed app was not replaced.
+
+The cleanup continuity assertion failed: Android's event log recorded the
+normal app's PRoot process being killed for "Trimming phantom processes" while
+both guest desktops were running. Its service then ended the session and stopped
+its X11 server. Reopening the normal app started a new session using the existing
+installation; uninterrupted survival of that background session is not claimed.
+No global Android process limits or normal-app preferences were changed. Track
+this separately from the successful native X11 display/input checks.
+
+Evidence is retained under build/display-audit/. The temporary acceptance app
+and its disposable data were removed after testing; the test environment can be
+recreated from the retained APK/image. Physical input
+devices and 16 KB-page runtime acceptance remain outstanding; this is not a
+new performance measurement or completion of all C/package-migration checks.
 
 ## 2026-10-26: first-party Java logic moved to C
 

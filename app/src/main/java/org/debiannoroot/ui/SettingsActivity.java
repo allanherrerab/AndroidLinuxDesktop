@@ -1,6 +1,7 @@
 package org.debiannoroot.ui;
 
 import org.debiannoroot.runtime.DisplayGeometry;
+import org.debiannoroot.runtime.SharedStorage;
 import org.debiannoroot.session.SessionSettings;
 
 import android.app.Activity;
@@ -13,7 +14,12 @@ import java.util.Arrays;
 public final class SettingsActivity extends LocalizedActivity {
     private SessionSettings settings;
     private LinearLayout page;
+    private TextView storageStatus;
     @Override public void onCreate(Bundle state) {super.onCreate(state);settings=new SessionSettings(this);render();}
+    @Override protected void onResume() {super.onResume();updateStorageStatus();}
+    private void updateStorageStatus() {
+        if(storageStatus!=null)storageStatus.setText(t(SharedStorage.allowed(this)?"Device file access is allowed.":"Device file access is not allowed."));
+    }
     private void heading(String title) {TextView text=new TextView(this);text.setText(t(title));text.setTextSize(21);text.setPadding(0,28,0,8);page.addView(text);}
     private void button(String title,Runnable action) {Button b=new Button(this);b.setText(t(title));b.setOnClickListener(v->action.run());page.addView(b);}
     private void flag(String title,String key,boolean fallback) {
@@ -72,6 +78,12 @@ public final class SettingsActivity extends LocalizedActivity {
         choice("Screen orientation","orientation","auto",new String[]{"Automatic","Landscape","Portrait"},new String[]{"auto","landscape","portrait"});
         number("TV / overscan border (%)","border",0,0,10);number("Refresh rate (Hz)","refresh",60,15,120);
         flag("Compatibility drawing (restart desktop to apply)","legacyDrawing",false);
+        choice("Guest graphics (restart desktop to apply)","graphics","software",new String[]{"Software rendering","VirGL (Android GPU)"},new String[]{"software","virgl"});
+        heading("Android files");
+        storageStatus=new TextView(this);page.addView(storageStatus);updateStorageStatus();
+        TextView storageHelp=new TextView(this);storageHelp.setText(t("Allow shared storage access to read device files at /storage/emulated/0 and removable volumes under /storage. Android restrictions still apply. All-files access also allows changes to shared files. Restart the desktop after granting access. /sdcard remains the app shared folder."));page.addView(storageHelp);
+        TextView storageWarning=new TextView(this);storageWarning.setText(t("Save guest work and stop the session before changing file access: Android may restart the app."));page.addView(storageWarning);
+        button("Manage device file access",()->SharedStorage.request(this));
         heading("Mouse emulation");
         choice("Mouse movement","mouseMode","relative",new String[]{"Relative (laptop / touchpad)","Absolute (touch screen)"},new String[]{"relative","absolute"});
         indexed("Relative mouse speed","mouseSpeed",2,new String[]{"Very slow","Slow","Medium","Fast","Very fast"});

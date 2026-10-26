@@ -4,6 +4,8 @@ import org.debiannoroot.audio.PulseAudioPlayer;
 import org.debiannoroot.runtime.NativeBridge;
 import org.debiannoroot.runtime.NativeCore;
 import org.debiannoroot.runtime.RootfsImage;
+import org.debiannoroot.runtime.SharedStorage;
+import org.debiannoroot.runtime.VirglRenderer;
 import org.debiannoroot.settings.RegionalConfig;
 import org.debiannoroot.settings.RegionalSettings;
 import org.debiannoroot.settings.UiText;
@@ -44,6 +46,7 @@ public final class DesktopService extends Service {
     private android.content.ServiceConnection x11Connection;
     private boolean x11Bound;
     private PulseAudioPlayer audio;
+    private volatile VirglRenderer graphics;
 
     private void startX11(File rootfs) throws Exception {
         byte[] cookie=new byte[16];new java.security.SecureRandom().nextBytes(cookie);
@@ -147,6 +150,8 @@ public final class DesktopService extends Service {
                 copyAsset("rootfs/bin/debian-noroot-setup-audio-panel",
                         new File(rootfs, "usr/local/bin/debian-noroot-setup-audio-panel"), true);
                 copyAsset("rootfs/bin/debian-noroot-ensure-locale",new File(rootfs,"usr/local/bin/debian-noroot-ensure-locale"),true);
+                copyAsset("rootfs/bin/debian-noroot-ensure-graphics",new File(rootfs,"usr/local/bin/debian-noroot-ensure-graphics"),true);
+                copyAsset("rootfs/bin/debian-noroot-probe-graphics",new File(rootfs,"usr/local/bin/debian-noroot-probe-graphics"),true);
                 copyAsset("rootfs/install/install-desktop.sh",
                         new File(rootfs, "root/debian-noroot-install-desktop.sh"), true);
                 copyAssetTree("rootfs/defaults",
@@ -164,8 +169,22 @@ public final class DesktopService extends Service {
                 if(stopping)return;
                 startX11(rootfs);
                 SessionSettings settings=new SessionSettings(this);
+                boolean virglRequested=settings.value("graphics","software").equals("virgl");
+                String guestGraphics="software";
+                if(virglRequested && !stopping) {
+                    try {
+                        graphics=new VirglRenderer(this,rootfs,()->stopping);
+                        guestGraphics="virgl";
+                    } catch(Exception error) {
+                        try(FileOutputStream log=new FileOutputStream(new File(getFilesDir(),"virgl.log"),true)) {
+                            log.write(("\nVirGL unavailable; using software rendering: "+error+"\n").getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                        }
+                    }
+                } else {
+                    java.nio.file.Files.write(new File(getFilesDir(),"virgl.log").toPath(),"VirGL is disabled for this session.\n".getBytes(java.nio.charset.StandardCharsets.UTF_8));
+                }
                 java.nio.file.Files.write(new File(rootfs,"tmp/debian-noroot-session.conf").toPath(),
-                        ("NOROOT_AUDIO="+(settings.flag("audio",true)?"1":"0")+"\n"+RegionalConfig.guestSettings(new RegionalSettings(this).guestLanguage(),new RegionalSettings(this).keyboard())).getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+                        ("NOROOT_AUDIO="+(settings.flag("audio",true)?"1":"0")+"\nNOROOT_GRAPHICS="+guestGraphics+"\nNOROOT_GRAPHICS_REQUESTED="+(virglRequested?"virgl":"software")+"\n"+RegionalConfig.guestSettings(new RegionalSettings(this).guestLanguage(),new RegionalSettings(this).keyboard())).getBytes(java.nio.charset.StandardCharsets.US_ASCII));
                 if(settings.flag("audio",true))audio=new PulseAudioPlayer(this,rootfs);
                 if (!stopping) {
                     publishStatus("running", "Starting XFCE desktop…");
@@ -175,9 +194,15 @@ public final class DesktopService extends Service {
                         throw new IllegalStateException("Cannot create shared files folder");
                     }
                     File proot = new File(getApplicationInfo().nativeLibraryDir, "libproot.so");
+                    String hostStorage=null;
+                    if(SharedStorage.allowed(this)) {
+                        File storage=new File(rootfs,"storage");
+                        if(!storage.isDirectory()&&!storage.mkdirs())throw new IllegalStateException("Cannot create guest storage folder");
+                        hostStorage="/storage";
+                    }
                     int exitCode = NativeBridge.runDesktop(getFilesDir().getAbsolutePath(),
                             rootfs.getAbsolutePath(), proot.getAbsolutePath(),
-                            getApplicationInfo().nativeLibraryDir, shared.getAbsolutePath());
+                            getApplicationInfo().nativeLibraryDir, shared.getAbsolutePath(),hostStorage);
                     if (!stopping) publishStatus(exitCode == 0 ? "ended" : "error",
                             "Debian session ended (" + exitCode + ")." +
                             (exitCode == 0 ? "" : " See session log for details."));
@@ -190,6 +215,7 @@ public final class DesktopService extends Service {
                     publishStatus("error", "Debian could not start: " + error.getMessage());
                 }
             } finally {
+                VirglRenderer renderer=graphics;graphics=null;if(renderer!=null)renderer.close();
                 PulseAudioPlayer playback=audio;audio=null;if(playback!=null)playback.close();
                 new android.os.Handler(getMainLooper()).post(() -> {
                     stopX11();
@@ -326,6 +352,7 @@ public final class DesktopService extends Service {
     public void onDestroy() {
         stopping = true;
         NativeBridge.stopDesktop();
+        VirglRenderer renderer=graphics;graphics=null;if(renderer!=null)renderer.close();
         PulseAudioPlayer playback=audio;audio=null;if(playback!=null)playback.close();
         stopX11();
         stopForeground(true);

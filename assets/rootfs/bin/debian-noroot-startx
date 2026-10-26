@@ -3,16 +3,19 @@ set -eu
 
 [ ! -f /tmp/debian-noroot-session.conf ] || . /tmp/debian-noroot-session.conf
 
+# Android owns the X server and renderer. Never start a second display server
+# from a stale guest setting; host VNC tests supply their own external server.
+if [ "${NOROOT_DISPLAY_BACKEND:-x11}" != "x11" ]; then
+    echo "This launcher requires embedded Termux:X11. Use the host test launcher for other servers." >&2
+    exit 2
+fi
+
 export HOME="${HOME:-/home/debian}"
 export USER="${USER:-debian}"
 export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/games:/usr/games"
 
 if ! command -v startxfce4 >/dev/null 2>&1; then
     echo "XFCE is not installed. Run /root/debian-noroot-install-desktop.sh from a proot root shell."
-    exit 127
-fi
-if [ "${NOROOT_DISPLAY_BACKEND:-x11}" = "vnc" ] && ! command -v Xtigervnc >/dev/null 2>&1; then
-    echo "The packaged image is missing the desktop server. Rebuild with --desktop."
     exit 127
 fi
 
@@ -32,10 +35,8 @@ if [ -n "${NOROOT_LANG:-}" ]; then
 fi
 
 export DISPLAY="${DISPLAY:-:0}"
-if [ "${NOROOT_DISPLAY_BACKEND:-x11}" = "x11" ]; then
-    export XAUTHORITY=/tmp/debian-noroot.Xauthority
-fi
-[ "${NOROOT_DISPLAY_BACKEND:-x11}" != "vnc" ] || export DISPLAY=:1
+export XAUTHORITY="${XAUTHORITY:-/tmp/debian-noroot.Xauthority}"
+echo "Display: external X11 server on $DISPLAY (Android: embedded Termux:X11)"
 export XDG_RUNTIME_DIR="/tmp/runtime-debian"
 export XDG_SESSION_TYPE=x11
 export XDG_CURRENT_DESKTOP=XFCE
@@ -59,48 +60,54 @@ if [ ! -s /etc/machine-id ]; then
 fi
 mkdir -p /var/lib/dbus
 ln -sf /etc/machine-id /var/lib/dbus/machine-id
-if [ "${NOROOT_DISPLAY_BACKEND:-x11}" = "vnc" ]; then
-    rm -f /tmp/debian-noroot-vnc.sock /tmp/.X1-lock /tmp/.X11-unix/X1
-fi
 
 /usr/local/bin/debian-noroot-setup-desktop
 
-server=
 session=
 pulse=
 cleanup() {
     trap - EXIT HUP INT TERM
     [ -z "$session" ] || kill "$session" 2>/dev/null || true
     [ -z "$pulse" ] || kill "$pulse" 2>/dev/null || true
-    [ -z "$server" ] || kill "$server" 2>/dev/null || true
     [ -z "$session" ] || wait "$session" 2>/dev/null || true
     [ -z "$pulse" ] || wait "$pulse" 2>/dev/null || true
     rm -f /tmp/debian-noroot-audio.sock /tmp/debian-noroot-pulse.sock
-    [ -z "$server" ] || wait "$server" 2>/dev/null || true
-    if [ "${NOROOT_DISPLAY_BACKEND:-x11}" = "vnc" ]; then
-    rm -f /tmp/debian-noroot-vnc.sock /tmp/.X1-lock /tmp/.X11-unix/X1
-fi
 }
 trap cleanup EXIT
 trap 'exit 0' HUP INT TERM
 
-# Only the explicit recovery/host-test backend starts a VNC server.
 # Android starts the embedded native X11 server before invoking this script.
-if [ "${NOROOT_DISPLAY_BACKEND:-x11}" = "vnc" ]; then
-    Xtigervnc :1 -geometry "${NOROOT_RESOLUTION:-1280x800}" -depth 24 -SecurityTypes None \
-        -rfbport -1 -rfbunixpath /tmp/debian-noroot-vnc.sock -rfbunixmode 0600 \
-        -nolisten tcp -localhost -AlwaysShared -AcceptSetDesktopSize=0 &
-    server=$!
-fi
 attempt=0
 until xdpyinfo -display "$DISPLAY" >/dev/null 2>&1; do
-    if { [ -n "$server" ] && ! kill -0 "$server" 2>/dev/null; } || [ "$attempt" -ge 30 ]; then
+    if [ "$attempt" -ge 30 ]; then
         echo "Desktop X server did not become ready."
         exit 1
     fi
     attempt=$((attempt + 1))
     sleep 1
 done
+
+# Virpipe uses Mesa's software GLX loader to transport rendering commands to
+# Android EGL/GLES. LIBGL_ALWAYS_SOFTWARE here selects that loader, not llvmpipe.
+if [ "${NOROOT_GRAPHICS:-software}" = "virgl" ]; then
+    if /usr/local/bin/debian-noroot-ensure-graphics && [ -S /tmp/.virgl_test ]; then
+        export GALLIUM_DRIVER=virpipe LIBGL_DRI3_DISABLE=1 VTEST_SOCKET_NAME=/tmp/.virgl_test
+        if /usr/local/bin/debian-noroot-probe-graphics; then
+            echo "Guest graphics: VirGL via Android EGL/GLES"
+            grep -E '^GL_(RENDERER|VERSION|VENDOR)|frames in' /tmp/debian-noroot-graphics-probe.log
+        else
+            echo "VirGL probe failed; using llvmpipe. See /tmp/debian-noroot-graphics-probe.log and virgl.log."
+            export GALLIUM_DRIVER=llvmpipe
+            unset VTEST_SOCKET_NAME LIBGL_DRI3_DISABLE
+        fi
+    else
+        echo "VirGL dependencies or private socket unavailable; using llvmpipe."
+    fi
+elif [ "${NOROOT_GRAPHICS_REQUESTED:-software}" = "virgl" ]; then
+    echo "Android VirGL server unavailable; using llvmpipe. See virgl.log."
+fi
+echo "$GALLIUM_DRIVER" > /tmp/debian-noroot-graphics-status
+echo "Android shared storage: ${NOROOT_ANDROID_STORAGE:-not granted}; app shared folder: /sdcard"
 
 if [ -n "${NOROOT_KEYBOARD_LAYOUT:-}" ]; then
     setxkbmap -layout "$NOROOT_KEYBOARD_LAYOUT" -variant "${NOROOT_KEYBOARD_VARIANT:-}"

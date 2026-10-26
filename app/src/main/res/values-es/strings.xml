@@ -2,6 +2,15 @@
     <string name="ui_cancel">Cancelar</string>
     <string name="ui_save">Guardar</string>
     <string name="ui_done">Listo</string>
+    <string name="ui_guest_graphics_restart_desktop_to_apply">Gráficos de Debian (reinicia el escritorio para aplicar)</string>
+    <string name="ui_software_rendering">Renderizado por software</string>
+    <string name="ui_virgl_android_gpu">VirGL (GPU de Android)</string>
+    <string name="ui_android_files">Archivos de Android</string>
+    <string name="ui_device_file_access_is_allowed">El acceso a los archivos del dispositivo está permitido.</string>
+    <string name="ui_device_file_access_is_not_allowed">El acceso a los archivos del dispositivo no está permitido.</string>
+    <string name="ui_allow_shared_storage_access_to_read_device_files_at_storage_emulated_0_and_removable_volumes_under_storage_android_restrictions_still_apply_all_files_access_also_allows_changes_to_shared_files_restart_the_desktop_after_granting_access_sdcard_remains_the_app_shared_folder">Permite el acceso al almacenamiento compartido para leer archivos en /storage/emulated/0 y unidades extraíbles en /storage. Siguen aplicándose las restricciones de Android. El acceso a todos los archivos también permite modificar archivos compartidos. Reinicia el escritorio después de conceder acceso. /sdcard sigue siendo la carpeta compartida de la aplicación.</string>
+    <string name="ui_manage_device_file_access">Administrar acceso a archivos del dispositivo</string>
+    <string name="ui_save_guest_work_and_stop_the_session_before_changing_file_access_android_may_restart_the_app">Guarda tu trabajo en Debian y detén la sesión antes de cambiar el acceso a archivos: Android puede reiniciar la aplicación.</string>
     <string name="ui_back">Volver</string>
     <string name="ui_settings">Ajustes</string>
     <string name="ui_keyboard">Teclado</string>
