@@ -46,7 +46,7 @@ As it stands you will need a 64-bit ARM **Android device running Android 8.0 or 
 - **No OpenGL support.** Android's GPU presents the desktop, but guest Linux applications don't get VirGL or hardware-accelerated OpenGL. Adjust your gaming ambitions accordingly (Minecraft Java will run, GTA V certainly not).  
 - **No privileged hardware access.** Debian shares the phone's kernel. You cannot re-partition the SD card, burn CD-ROMs, run raw `ping` or sniff your network, etc.  
 - **No ability to move the app to the SD card**, so you'll need a lot of internal storage.  
-- **Most servers such as SSH or Apache won't start**, because they all need root features. You can use `tightvncserver` instead of SSH, and `wbox` instead of Apache as a simple file-sharing web server.  
+- **Servers that requiere ports lower than 1024 won't start**, because they all need root features. Feel free to start Apache in port 8080 instead.
 - **No microphone capture.** Might not work sometimes.  
 - **Android chooses the Android keyboard.** The app's layout setting changes the guest X11 keyboard. Japanese Unicode input works, but a separate Japanese input method inside Debian isn't configured.  
 I've tested on a Galaxy S24 FE (SM-S721B), Android 16. The native binaries pass 16 KB alignment checks, but testing on a 16 KB-page device is still outstanding. One working phone is encouraging; it isn't universal Android compatibility. [Process.md](Process.md) has the test results and limits.
