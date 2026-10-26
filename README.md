@@ -1,5 +1,7 @@
 # Debian Noroot
 
+[Leer en español](readme.es.md)
+
 > Put a Debian desktop on your Android phone. No root required. Patience sold separately.
 
 Run Debian on top of Android with a single click. Should work on almost any device. Unleash a full unrestricted desktop environment onto your mobile device. Instant frustration guaranteed (unless you're using a mouse or stylus).
