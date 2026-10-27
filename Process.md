@@ -1,5 +1,56 @@
 # Development and repair log
 
+## 2026-10-27: remove startup GL workload
+
+Removed the startup `glxgears` workload from the VirGL probe. Startup now uses
+the bounded `glxinfo -B` renderer query and does not open an animation window;
+SuperTuxKart remains the application-level rendering check. The existing
+VirGL context-switch patch is retained for concurrent clients. Host tests passed
+(24 Python checks plus the existing C/JNI/core checks). Generated build logs and
+test screenshots were removed with `make clean`; a fresh image/APK was not
+rebuilt because the cleaned checkout no longer contains the generated rootfs
+manifest required by the overlay-only target.
+
+## 2026-10-27: concurrent VirGL client repair
+
+Installed the authorized normal debug APK after the user uninstalled the
+release. Initialized a fresh verified image, enabled VirGL, and installed Debian's
+SuperTuxKart package for device reproduction. Subsequent APK updates used
+`adb install -r`; the ready-rootfs marker retained its inode and timestamp.
+
+Reproduced the reported lost-rendering-server connection with two glxgears
+clients and with glxgears followed by SuperTuxKart. The server stayed alive;
+the affected client's CLEAR failed with GL_INVALID_FRAMEBUFFER_OPERATION
+(1286), followed by VTEST_CLIENT_ERROR_COMMAND_DISPATCH. This was not an
+intentional single-client restriction.
+
+The pinned renderer had two GL-state hazards during interleaved client startup:
+capability queries bound/deleted temporary framebuffers and textures in the
+active client's context, and creation of another client/subcontext made its
+EGL context current without updating the renderer's current-context cache.
+The local source patch isolates capability probes in host context 0 and updates
+the cache after context creation. Testing each correction alone still failed;
+the combined patch passed. The original sources/pins and Termux:X11 engine are
+unchanged. The build manifest records the local patch hash, and a changed patch
+invalidates the cached renderer binary.
+
+On the Galaxy S24 FE, Android 16 / 4 KB pages, the combined patch passed a
+32-second overlapping-client/reconnect test and the same test with the peer
+killed using SIGKILL. In each run the survivor completed six positive five-second
+frame samples, and both peer and replacement completed a sample; all reported
+VirGL on the Xclipse 940. A screenshot also showed both gears windows rendering.
+These are compatibility checks, not benchmark claims. Native fence-export
+warnings and input-read messages on deliberately terminated clients remain;
+the passing runs did not produce the previous framebuffer/dispatch failures.
+
+Added a repeatable device regression and host tests rejecting software output,
+missing frames, crash exits and lost-connection messages even after frames.
+Host tests passed (25 Python cases plus C/JNI/Java/native checks), as did debug
+assembly/lint, all 34 pinned X11 JNI signatures, APK/image pairing and native
+ELF alignment. The installed renderer hash matches the patched APK/build.
+Evidence and failed intermediate runs are retained in build/virgl-multiclient/.
+SuperTuxKart concurrency acceptance is still in progress at this point.
+
 ## 2026-10-26: experimental VirGL and Android shared files
 
 Added an opt-in Guest graphics setting (software remains the default). A pinned

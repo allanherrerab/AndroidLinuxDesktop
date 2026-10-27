@@ -1,0 +1,19 @@
+#!/bin/sh
+set -eu
+installed() {
+    for package in libgl1-mesa-dri libglx-mesa0 mesa-utils; do
+        [ "$(dpkg-query -W -f='${Status}' "$package" 2>/dev/null)" = "install ok installed" ] || return 1
+    done
+    command -v glxinfo >/dev/null 2>&1
+}
+installed && exit 0
+[ "$(id -u)" = 0 ] || exec sudo -n -- /bin/sh "$0"
+export DEBIAN_FRONTEND=noninteractive
+exec 9>/tmp/debian-noroot-graphics-install.lock
+flock -x 9
+installed && exit 0
+echo "Installing guest Mesa VirGL support…"
+apt-get -o APT::Sandbox::User=root -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 update
+apt-get -o APT::Sandbox::User=root -o Acquire::Retries=1 -o Acquire::http::Timeout=20 -o Acquire::https::Timeout=20 \
+    install -y --no-install-recommends libgl1-mesa-dri libglx-mesa0 mesa-utils
+installed

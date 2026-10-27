@@ -52,6 +52,12 @@ for Android native-library packaging) from checksum-pinned virglrenderer and
 libepoxy sources. The selected Android patches come from Termux packages commit
 `9c4e57f8e1d8525ea9267572351a15449de34292`; the recipe adapts the GBM patch's Meson
 context to 1.3.0 with checked replacements. ANGLE-specific patches are not used.
+The local `tools/build/patches/virgl-context-switch.patch` isolates capability
+probes in the host GL context so a new client cannot disturb an active client's
+texture/framebuffer bindings.
+It also updates context-switch bookkeeping after creating a client/subcontext.
+Its SHA-256 is recorded in the manifest and participates in build-cache checks;
+retain this patch alongside the recipe when redistributing the renderer.
 The source archives, original patches, static libraries and build tree remain in
 `build/graphics/`. `dist/graphics.manifest.json` records URLs, checksums and the
 binary identity. Preserve these sources and the build recipe with redistributed

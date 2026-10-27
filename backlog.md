@@ -12,6 +12,10 @@ the missing historical backlog; earlier results remain in Process.md.
 - [ ] Extend VirGL coverage to other GPUs/GL applications, Android 8–10 storage
   permissions and a physical removable volume. The S24 FE smoke is not a
   universal hardware/performance claim.
+- [x] Repair and validate concurrent VirGL clients: reproduce gears/STK
+  disconnects, fix context-switch bookkeeping, and test reconnects/client death.
+  Startup no longer launches glxgears; application-level SuperTuxKart coverage
+  remains a device follow-up.
 
 - [x] Complete directory/package migration and update build, test, asset refresh,
   generator and documentation references. Host tests and debug/release/acceptance

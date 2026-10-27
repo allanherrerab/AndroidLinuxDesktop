@@ -1,0 +1,37 @@
+Capability probes bind/delete temporary textures and framebuffers. A new vtest
+client may request caps while another client is rendering. Run these probes in
+the host context, not the active client's context, whose cached state must be
+preserved. force_ctx_0 also updates the context-switch cache for the next submit.
+Subcontext creation must likewise update the cache after directly binding its
+new EGL context; another client's commands can resume before this client submits.
+
+diff --git a/src/vrend/vrend_renderer.c b/src/vrend/vrend_renderer.c
+--- a/src/vrend/vrend_renderer.c
++++ b/src/vrend/vrend_renderer.c
+@@ -12994,5 +12994,11 @@ void vrend_renderer_fill_caps(uint32_t set, uint32_t version,
+       return;
+    }
++
++   /* Capability probes mutate texture and framebuffer bindings. A new
++    * client's GET_CAPS must not corrupt a rendering client's GL state.
++    */
++   vrend_renderer_force_ctx_0();
++
+ 
+    /* We don't want to deal with stale error states that the caller might not
+     * have cleaned up propperly, so read the error state until we are okay.
+@@ -13317,6 +13323,14 @@ void vrend_renderer_create_sub_ctx(struct vrend_context *ctx, int sub_ctx_id)
+       ctx->sub0 = sub;
+ 
+    vrend_set_tweak_from_env(&ctx->sub->tweaks);
++
++   /* make_current above changed the actual context, including when another
++    * client's command stream was active. Keep the switch fast path in sync
++    * with the EGL context that is actually bound.
++    */
++   vrend_state.current_ctx = ctx;
++   vrend_state.current_hw_ctx = ctx;
++   ctx->ctx_switch_pending = false;
+ }
+ 
+ unsigned vrend_context_has_debug_flag(const struct vrend_context *ctx, enum virgl_debug_flags flag)

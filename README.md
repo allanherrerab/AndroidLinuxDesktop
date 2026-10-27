@@ -257,6 +257,12 @@ mapped GL workload with positive completed frames. It saves the renderer/frame
 log and JSON evidence. Optional `--storage-fixture /storage/emulated/0/Download/TEST_FILE`
 reads and hashes only that caller-owned fixture after the system grant; it does
 not browse personal files. This is a compatibility smoke, not a GPU benchmark.
+For overlapping clients and reconnects, run
+`python3 tools/smoke/smoke-device-virgl-multiclient.py` against the normal debug
+app with VirGL enabled. Add `--kill-peer` to test an abrupt SIGKILL disconnect.
+The test checks completed frame samples from the surviving client and its peers;
+logs and results are saved under `build/virgl-multiclient/`. It does not restart
+the desktop or type into an existing terminal.
 For first-run import/extraction tests:  
 ```  
 gradle :app:assembleAcceptance :app:lintAcceptance  

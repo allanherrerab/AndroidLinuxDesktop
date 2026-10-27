@@ -94,7 +94,7 @@ if [ "${NOROOT_GRAPHICS:-software}" = "virgl" ]; then
         export GALLIUM_DRIVER=virpipe LIBGL_DRI3_DISABLE=1 VTEST_SOCKET_NAME=/tmp/.virgl_test
         if /usr/local/bin/debian-noroot-probe-graphics; then
             echo "Guest graphics: VirGL via Android EGL/GLES"
-            grep -E '^GL_(RENDERER|VERSION|VENDOR)|frames in' /tmp/debian-noroot-graphics-probe.log
+            grep -E '^GL_(RENDERER|VERSION|VENDOR)' /tmp/debian-noroot-graphics-probe.log
         else
             echo "VirGL probe failed; using llvmpipe. See /tmp/debian-noroot-graphics-probe.log and virgl.log."
             export GALLIUM_DRIVER=llvmpipe
