@@ -6,7 +6,7 @@ set -eu
 log=${1:-/tmp/debian-noroot-graphics-probe.log}
 status=0
 timeout 8 stdbuf -oL glxinfo -B > "$log" 2>&1 || status=$?
-case "$status" in 0|124) ;; *) exit 1 ;; esac
+case "$status" in 0|1|124) ;; *) exit 1 ;; esac
 if grep -Eq '^GL_RENDERER[[:space:]]*=[[:space:]]*virgl' "$log" &&
    ! grep -Eqi 'llvmpipe|softpipe|swiftshader|software rasterizer' "$log"; then
     exit 0
@@ -14,7 +14,8 @@ fi
 # Termux:X11 can reject glxinfo's unmapped readback with X_GetImage BadMatch.
 # The private socket is still a useful startup check; mapped application
 # rendering is covered separately by the multiclient device regression.
-if [ -S "${VTEST_SOCKET_NAME:-}" ] && grep -q 'X_GetImage.*BadMatch' "$log"; then
+if [ -S "${VTEST_SOCKET_NAME:-}" ] &&
+   grep -q 'X_GetImage' "$log" && grep -q 'BadMatch' "$log"; then
     printf '%s\n' 'GL_RENDERER = virgl (private vtest socket; glxinfo readback unavailable)' >> "$log"
     exit 0
 fi
