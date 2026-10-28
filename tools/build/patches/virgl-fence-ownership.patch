@@ -1,0 +1,16 @@
+Destroying a context must invalidate only its own in-flight fence.
+The sync thread can be waiting on another client or the shared ctx0 timeline;
+dropping that completion leaves vtest RESOURCE_BUSY_WAIT blocked forever.
+
+--- a/src/vrend/vrend_renderer.c
++++ b/src/vrend/vrend_renderer.c
+@@ -7256,7 +7256,8 @@
+          if (fence->ctx == ctx)
+             free_fence_locked(fence);
+       }
+-      if (vrend_state.fence_waiting) {
++      if (vrend_state.fence_waiting &&
++          vrend_state.fence_waiting->ctx == ctx) {
+          /* mark the fence invalid as the sync thread is still waiting on it */
+          vrend_state.fence_waiting->ctx = NULL;
+       }

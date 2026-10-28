@@ -176,3 +176,6 @@ Checking external Debian image…	Verificando imagen externa de Debian…	Verifi
 Extracting verified Debian image…	Extrayendo imagen verificada de Debian…	Extraindo imagem Debian verificada…	Extraction de l’image Debian vérifiée…	Geprüftes Debian-Abbild wird entpackt…	検証済み Debian イメージを展開中…	Rozpakowywanie zweryfikowanego obrazu Debiana…
 Debian session	Sesión de Debian	Sessão Debian	Session Debian	Debian-Sitzung	Debian セッション	Sesja Debiana
 Stop	Detener	Parar	Arrêter	Beenden	停止	Zatrzymaj
+Game controls	Controles de juego	Controles de jogo	Commandes de jeu	Spielsteuerung	ゲーム操作	Sterowanie grą
+Hide game controls	Ocultar controles de juego	Ocultar controles de jogo	Masquer les commandes de jeu	Spielsteuerung ausblenden	ゲーム操作を非表示	Ukryj sterowanie grą
+Directional pad	Cruceta direccional	Controle direcional	Croix directionnelle	Steuerkreuz	方向パッド	Krzyżak kierunkowy

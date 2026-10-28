@@ -177,5 +177,8 @@
     <string name="ui_extracting_verified_debian_image_ellipsis">検証済み Debian イメージを展開中…</string>
     <string name="ui_debian_session">Debian セッション</string>
     <string name="ui_stop">停止</string>
+    <string name="ui_game_controls">ゲーム操作</string>
+    <string name="ui_hide_game_controls">ゲーム操作を非表示</string>
+    <string name="ui_directional_pad">方向パッド</string>
     <string name="app_name">Debian Noroot</string>
 </resources>

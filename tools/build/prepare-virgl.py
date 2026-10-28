@@ -32,11 +32,15 @@ PATCHES = {
     "0004-Fallback-to-ashmem": "3848656628611e71bfab705d23146390e7778132ccb327a9368d71dc81ef1f17",
     "0005-Enable-debug-for-EGL": "7c40e61af71b53e2067254727fd7126ca05a97139b35e62f1b065222c2584828",
     "0006-Disable-feature-feat_dual_src_blend": "eeaa564b1f0317e6285d74414cbf58dbe9f083e30c3cad034ff800d3d2b6518e",
-    "0008-Impl-DXTn-S3TC-texture-decompression-in-virglrenderer": "40e8f14aa6b9f95795d64bbd55346e7ba1401f7b3e8f06bdade311bfa27e66f5",
     "0009-disable-termux-detection": "5e466a64a3d375fa23dffd1bde72ddc51f6adce328e57df6c214b29bdd7ca337",
     "0010-disable-memfd_create-timespec_get": "3fc7b763aa16addbcbd81145b1d9cde1227bef60961feafed51594440a0ab65c",
 }
-LOCAL_PATCHES = [PROJECT / "tools/build/patches/virgl-context-switch.patch"]
+LOCAL_PATCHES = [PROJECT / "tools/build/patches" / name for name in (
+    "virgl-context-switch.patch", "virgl-fence-ownership.patch")]
+# Do not apply Termux's DXT decompression patch: it redefines immutable
+# compressed storage with glTexImage and uploads RGBA into compressed textures.
+# Upstream probes native format support and advertises only supported formats;
+# guest Mesa/applications can choose their normal fallback on other GPUs.
 for name, sha in PATCHES.items():
     SOURCES[name + ".patch"] = (f"https://raw.githubusercontent.com/termux/termux-packages/{TERMUX}/packages/virglrenderer-android/{name}.patch.beforehostbuild", sha)
 
@@ -157,7 +161,6 @@ cpp_link_args = ['-Wl,-z,max-page-size=16384']
     licenses = PROJECT / "licenses"
     shutil.copyfile(virgl / "COPYING", licenses / "virglrenderer-MIT.txt")
     shutil.copyfile(epoxy / "COPYING", licenses / "libepoxy-MIT.txt")
-    # Texture decompression code carries its own MIT notices in the retained patch.
     manifest.write_text(json.dumps({"virglrenderer": "1.3.0", "libepoxy": "1.5.10", "termux_patches_commit": TERMUX,
         "ndk": "27.2.12479018", "recipe_sha256": recipe, "local_patches": local_patches,
         "binaries": {target.name: digest(target)},

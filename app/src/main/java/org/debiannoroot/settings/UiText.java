@@ -185,6 +185,9 @@ public final class UiText {
             case "Extracting verified Debian image…": return context.getString(R.string.ui_extracting_verified_debian_image_ellipsis);
             case "Debian session": return context.getString(R.string.ui_debian_session);
             case "Stop": return context.getString(R.string.ui_stop);
+            case "Game controls": return context.getString(R.string.ui_game_controls);
+            case "Hide game controls": return context.getString(R.string.ui_hide_game_controls);
+            case "Directional pad": return context.getString(R.string.ui_directional_pad);
             case "Debian Noroot": return context.getString(R.string.app_name);
             default:return source;
         }

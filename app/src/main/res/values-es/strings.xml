@@ -177,5 +177,8 @@
     <string name="ui_extracting_verified_debian_image_ellipsis">Extrayendo imagen verificada de Debian…</string>
     <string name="ui_debian_session">Sesión de Debian</string>
     <string name="ui_stop">Detener</string>
+    <string name="ui_game_controls">Controles de juego</string>
+    <string name="ui_hide_game_controls">Ocultar controles de juego</string>
+    <string name="ui_directional_pad">Cruceta direccional</string>
     <string name="app_name">Debian Noroot</string>
 </resources>

@@ -17,6 +17,16 @@ the missing historical backlog; earlier results remain in Process.md.
   Startup no longer launches glxgears; application-level SuperTuxKart coverage
   remains a device follow-up.
 
+- [x] Repair compressed-texture uploads, integer vertex inputs used by animated
+  meshes, and loss of another context's fence completion on client death. S24 FE
+  pixel and extended concurrency regressions pass; SuperTuxKart renders complete
+  karts/characters. See Process.md for performance samples and coverage limits.
+
+- [ ] Improve SuperTuxKart presentation/frame pacing. Correct meshes and client
+  lifetime checks now pass, but the measured four-kart 800x600 Lighthouse scene
+  presents about 34–36 FPS on the S24 FE. Game physics/profile counters are not
+  render-FPS evidence. See Process.md.
+
 - [x] Complete directory/package migration and update build, test, asset refresh,
   generator and documentation references. Host tests and debug/release/acceptance
   assembly and lint passed; device acceptance remains a separate item below.
@@ -41,3 +51,8 @@ the missing historical backlog; earlier results remain in Process.md.
   input and audio. Host/build checks do not constitute device acceptance.
 
 Accepted feature differences and hardware-testing limits remain in PARITY.md.
+
+- [x] Hold toolbar arrows/shortcuts until touch release and expose an optional
+  multitouch game pad/action overlay; user confirmed device operation.
+- [ ] Establish repeatable automated Android multitouch acceptance for the game
+  overlay; the experimental injector did not provide a reliable pass. See Process.md.

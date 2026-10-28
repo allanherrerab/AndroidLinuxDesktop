@@ -17,7 +17,9 @@ javac -h "$PROJECT_DIR/build/host-tests" -d "$PROJECT_DIR/build/host-tests" \
     "$PROJECT_DIR/app/src/main/java/org/debiannoroot/settings/RegionalConfig.java" \
     "$PROJECT_DIR/tests/java/RegionalConfigTest.java" \
     "$PROJECT_DIR/app/src/main/java/org/debiannoroot/session/SessionLogs.java" \
-    "$PROJECT_DIR/tests/java/SessionLogsTest.java"
+    "$PROJECT_DIR/tests/java/SessionLogsTest.java" \
+    "$PROJECT_DIR/app/src/main/java/org/debiannoroot/ui/HeldKeys.java" \
+    "$PROJECT_DIR/tests/java/HeldKeysTest.java"
 python3 - <<'PY_CORE'
 import os, shlex, subprocess, sysconfig
 from pathlib import Path
@@ -49,6 +51,7 @@ subprocess.run([str(target)],check=True,env={**os.environ,
     'ASAN_OPTIONS':'detect_leaks=1:halt_on_error=1','UBSAN_OPTIONS':'halt_on_error=1'})
 print('C core vectors and malformed values passed'+(' (ASan/UBSan)' if sanitizers else ''))
 PY_CORE
+java -cp "$PROJECT_DIR/build/host-tests" org.debiannoroot.ui.HeldKeysTest
 java -cp "$PROJECT_DIR/build/host-tests" org.debiannoroot.RfbConnectionTest
 java -Xcheck:jni -Djava.library.path="$PROJECT_DIR/build/host-tests" -cp "$PROJECT_DIR/build/host-tests" org.debiannoroot.DisplayAndImageTest
 java -Xcheck:jni -Djava.library.path="$PROJECT_DIR/build/host-tests" -cp "$PROJECT_DIR/build/host-tests" org.debiannoroot.NativeCoreTest

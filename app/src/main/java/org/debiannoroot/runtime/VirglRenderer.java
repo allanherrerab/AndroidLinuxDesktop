@@ -19,6 +19,10 @@ public final class VirglRenderer implements AutoCloseable {
         ProcessBuilder command = new ProcessBuilder(binary.getAbsolutePath(), "--no-fork", "--multi-clients",
                 "--use-egl-surfaceless", "--use-gles", "--socket-path", socket.getAbsolutePath());
         command.environment().put("TMPDIR", socket.getParent());
+        // Keep integer vertex inputs typed as integers in translated shaders.
+        // ANGLE/Xclipse loses dynamically addressed skinning data on the
+        // default float-bitcast input path (even though constant reads work).
+        command.environment().put("VIRGL_USE_INTEGER", "1");
         command.redirectErrorStream(true);
         command.redirectOutput(new File(context.getFilesDir(), "virgl.log"));
         process = command.start();

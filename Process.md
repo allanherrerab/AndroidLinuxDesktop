@@ -1,5 +1,118 @@
 # Development and repair log
 
+## 2026-10-27: Held arrows and touch game controls
+
+Toolbar shortcut/function buttons previously sent key-down and key-up together
+from a click callback. They now hold on touch-down and release on lift, movement
+outside the button or cancellation. Accessibility clicks still send a key tap.
+Added an optional multitouch directional pad (including sliding diagonals) and
+Space/N/V/Ctrl/Enter/Esc buttons, exposed through Game controls. Its visibility
+persists; fullscreen retains the overlay and the existing toolbar escape.
+Shared virtual keys use ownership counts so one control cannot release another
+control's hold. Hiding, detaching, pausing, losing window focus and disconnecting
+release held input; modifier/drag indicators reset with input release.
+New labels are generated from the seven-language translation source.
+
+The user confirmed the controls work on the S24 FE. The device check also
+observed a sustained Up key through XQueryKeymap. An experimental external
+multitouch injection probe produced inconsistent results (including Up missing
+when Space was added); this is not counted as an automated multitouch pass.
+Removed that unfinished probe, its disposable APK/key/classes, and temporary
+production logging. Retained failure evidence under ignored build/game-controls
+and the portable held-key regression covering shared holds, diagonals,
+simultaneous actions, cancellation and a fresh session. No rootfs or user-file
+cleanup was performed.
+
+Final cleanup validation: make test passed 25 Python tests plus the C/JNI, Java,
+held-input and native launcher regressions. Release assembly/lint, all 34 pinned
+X11 JNI signatures, APK/OBB pairing, full-image verification and 16 KB ELF
+alignment passed. The release
+variant remains unsigned because no release signing key is configured; it was
+not installed over the working development-signed app or published. A clean debug
+assembly/lint, ABI/artifact checks and APK signature verification also passed.
+The user subsequently authorized pushing the code to AndroidLinuxDesktop and
+publishing a new daily release using the existing development-signed APK and
+matching OBB, with the note “fixed VirGL and added game controls”.
+
+## 2026-10-27: VirGL textures and animated meshes
+
+Reproduced the reported SuperTuxKart kart-selection failure on the S24 FE:
+only wheels rendered, and virgl.log repeatedly reported glTexImage2D /
+glTexSubImage2D GL_INVALID_OPERATION. Three independent problems were present.
+
+The selected Termux DXT-decompression patch unconditionally decoded compressed
+uploads, then attempted to redefine immutable compressed storage as RGBA. Removed
+that patch from the build recipe; upstream native format probing and compressed
+uploads now handle those textures. Its original cached source and MIT notices
+remain for provenance. The concurrent-client context-switch patch is retained.
+Generated DXT pixels failed before removal while plain RGBA controls passed;
+removing the patch fixed compressed pixels but did not restore animated meshes.
+
+Reduced the missing animated meshes to an isolated GLES vertex shader: a
+constant address read an RGBA32F bone texture correctly, while an address formed
+from integer joint/instance attributes returned zero. Reading those attributes
+as colors also worked. Diagnostic generated GLSL showed the default float-bitcast
+vertex-input path; enabling upstream VIRGL_USE_INTEGER=1 produced typed integer
+inputs and fixed the same failing shader. The session-owned Android renderer now
+enables that option. No GL version or guest application shader is overridden.
+A software-rendered comparison showed the complete kart; the corrected VirGL
+race also showed complete karts and characters. Temporary game runs used a copy
+of the game's configuration in /tmp, preserving the user's game settings.
+
+A longer game/client-death stress test then reproduced a renderer-wide stall.
+The server was waiting on its global fence eventfd, the game was waiting for a
+reply, and new clients could not progress. Inspecting the app-owned renderer's
+state showed one submitted implicit fence without completion and no remaining
+queued/in-flight fence. Upstream vrend_free_fences_for_context invalidated the
+sync thread's current fence without checking its owner; destroying a gears
+client could therefore drop a shared ctx0 completion needed by the game.
+Added virgl-fence-ownership.patch to invalidate only a fence belonging to the
+context being destroyed. A deterministic C harness compiles that actual
+function from the cached pinned source: the original fails the ownership
+check, and the patched function preserves an unrelated fence while still
+invalidating its own. Failed stress outputs/timeouts are retained and are not
+counted as passes.
+
+Added smoke-device-virgl-textures.py and its guest ctypes/EGL pixel harness.
+All 16 cases passed on the final optimized renderer: mutable/immutable DXT1/3/5,
+sRGB decoding, alpha, mipmaps and partial updates, plain RGBA controls, and mixed
+float/integer vertex inputs with signed joints and instanced bone-texture
+addresses. No compressed-format cases were skipped on this GPU. Checks run
+against the native-only fix correctly failed the skinning cases. Screenshots
+and intermediate failures remain under build/virgl-assets/.
+
+After the fence repair, a 60-second simulation profile of Lighthouse at
+800x600 with four karts completed normally. Its log labels 7202 updates over
+69.294 seconds as 103.934 FPS, but ProfileWorld::update counts physics updates;
+that counter must not be presented as measured render FPS. Normal-disconnect/
+reconnect and two SIGKILL
+runs each passed all original frame-count assertions: six survivor samples and
+one sample from each peer/replacement. These tests overlapped the game where its
+run duration permitted; all 16 pixel cases passed again afterward. This sample
+is not a before/after speed comparison: the broken builds omitted geometry,
+and diagnostic builds and overlapping test clients add different overhead.
+
+A separate SurfaceFlinger measurement of that scene recorded 394 presented
+frames over 11.445 seconds (34.34 FPS; median interval 33.29 ms, p95 33.47 ms).
+The same native surface presented a 600x600 gears window at 60.02 FPS over
+11.496 seconds (median 16.66 ms, p95 16.76 ms). Capping the copied game config at
+60 FPS, using a 768-pixel aligned window, requesting SDL's GLX ES path, and enabling Mesa glthread did
+not materially improve the game sample (about 34–36 FPS). The engine's ABI and
+source remain unchanged; these experiments did not modify user preferences.
+Smooth 60 FPS SuperTuxKart gameplay is not established by the rendering repairs.
+
+The final debug build passed assembly/lint, the 34 pinned X11 JNI registrations,
+APK/image pairing and native ELF alignment; make test passed 25 Python tests plus
+the existing C/JNI/Java/native checks. Updated the normal installation using
+adb install -r. Its ready-rootfs inode/size/timestamp and display/regional
+preferences were preserved; the private socket retained mode 0600. Diagnostic
+renderer binaries were removed from the final APK, and temporary diagnostic
+servers were stopped. Identified guest test directories and ADB scratch files
+were removed after retaining host evidence. The original SuperTuxKart config
+was byte-identical to its backup; the game was reopened through the normal
+XFCE launcher with the user's settings. Android runtime coverage remains this Galaxy S24 FE,
+Android 16 / 4 KB pages, rather than other GPUs or 16 KB-page acceptance.
+
 ## 2026-10-27: remove startup GL workload
 
 Removed the startup `glxgears` workload from the VirGL probe. Startup now uses

@@ -177,5 +177,8 @@
     <string name="ui_extracting_verified_debian_image_ellipsis">Geprüftes Debian-Abbild wird entpackt…</string>
     <string name="ui_debian_session">Debian-Sitzung</string>
     <string name="ui_stop">Beenden</string>
+    <string name="ui_game_controls">Spielsteuerung</string>
+    <string name="ui_hide_game_controls">Spielsteuerung ausblenden</string>
+    <string name="ui_directional_pad">Steuerkreuz</string>
     <string name="app_name">Debian Noroot</string>
 </resources>

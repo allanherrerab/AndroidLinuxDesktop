@@ -177,5 +177,8 @@
     <string name="ui_extracting_verified_debian_image_ellipsis">Rozpakowywanie zweryfikowanego obrazu Debiana…</string>
     <string name="ui_debian_session">Sesja Debiana</string>
     <string name="ui_stop">Zatrzymaj</string>
+    <string name="ui_game_controls">Sterowanie grą</string>
+    <string name="ui_hide_game_controls">Ukryj sterowanie grą</string>
+    <string name="ui_directional_pad">Krzyżak kierunkowy</string>
     <string name="app_name">Debian Noroot</string>
 </resources>

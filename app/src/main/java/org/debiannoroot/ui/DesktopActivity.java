@@ -19,20 +19,23 @@ public final class DesktopActivity extends com.termux.x11.MainActivity implement
     public static final String[] EXTRA_KEYS={"Esc","Tab","Ctrl","Alt","Shift","Space","Delete","Left","Right","Up","Down","PgUp","PgDn","F1","F2","F3","F4","F5","F6","F7","F8","F9","F10","F11","F12"};
     public static final String[] DEFAULT_KEYS={"Esc","Tab","Ctrl","Alt","Up","Down"};
     private final Handler handler=new Handler(Looper.getMainLooper());
-    private final Map<Long,Integer> pressed=new HashMap<>();
+    private final HeldKeys held=new HeldKeys((key,down)->{
+        if(this.x11!=null&&!this.closed&&this.x11.isConnected())this.x11.key((int)(key>>32),(int)key,down);
+    });
     private LorieView x11;
     private DesktopInputView desktop;
     private TextView status;
     private LinearLayout toolbar,page;
     private HorizontalScrollView controlsBar,functionBar;
     private Button showControls;
+    private GameControlsView gameControls;
     private IBinder server;
     private boolean bound,closed,restoreKeyboard;
     private int lastButtons;
     private SessionSettings settings;
     private final ServiceConnection binding=new ServiceConnection(){
         public void onServiceConnected(ComponentName name,IBinder binder){server=binder;connect();}
-        public void onServiceDisconnected(ComponentName name){server=null;status.setText(R.string.x11_disconnected);status.setVisibility(View.VISIBLE);}
+        public void onServiceDisconnected(ComponentName name){server=null;releaseInput();status.setText(R.string.x11_disconnected);status.setVisibility(View.VISIBLE);}
     };
     private final Runnable retry=this::connect;
     @Override public void onCreate(Bundle state){
@@ -46,6 +49,9 @@ public final class DesktopActivity extends com.termux.x11.MainActivity implement
         status=new TextView(this);status.setTextColor(android.graphics.Color.WHITE);status.setText(R.string.waiting);page.addView(status);
         FrameLayout surface=new FrameLayout(this);x11=new LorieView(this);surface.addView(x11,new FrameLayout.LayoutParams(-1,-1));
         desktop=new DesktopInputView(this,this);desktop.nativeOverlay(x11);surface.addView(desktop,new FrameLayout.LayoutParams(-1,-1));
+        gameControls=new GameControlsView(this,held,this::style,()->setGameControls(false));
+        surface.addView(gameControls,new FrameLayout.LayoutParams(-1,-1));
+        gameControls.setVisibility(settings.flag("gameControls",false)?View.VISIBLE:View.GONE);
         showControls=new Button(this);showControls.setText("☰");showControls.setContentDescription(t("Show controls"));
         showControls.setOnClickListener(v->{settings.preferences.edit().putBoolean("fullscreen",false).apply();applyFullscreen();});
         FrameLayout.LayoutParams restore=new FrameLayout.LayoutParams(-2,-2,Gravity.TOP|Gravity.END);surface.addView(showControls,restore);
@@ -58,6 +64,11 @@ public final class DesktopActivity extends com.termux.x11.MainActivity implement
         if(!theme.equals("system")){view.setTextColor(theme.equals("dark")?android.graphics.Color.WHITE:android.graphics.Color.BLACK);view.setBackgroundTintList(android.content.res.ColorStateList.valueOf(theme.equals("dark")?0xff30343b:0xffeeeeee));}
     }
     private void button(String label,Runnable action){Button b=new Button(this);b.setText(t(label));style(b);b.setFocusable(false);b.setOnClickListener(v->action.run());toolbar.addView(b);}
+    private void holdButton(String label,int code,LinearLayout parent){HoldKeyButton b=new HoldKeyButton(this,held,code);b.setText(t(label));style(b);parent.addView(b);}
+    private void setGameControls(boolean visible){
+        gameControls.release();gameControls.setVisibility(visible?View.VISIBLE:View.GONE);
+        settings.preferences.edit().putBoolean("gameControls",visible).apply();
+    }
     private void keyToggle(String label,int code){ToggleButton toggle=new ToggleButton(this);toggle.setTextOn(t(label)+" ✓");toggle.setTextOff(t(label));toggle.setText(t(label));toggle.setChecked(false);style(toggle);toggle.setFocusable(false);toggle.setOnCheckedChangeListener((b,on)->hardware(0,code,on));toolbar.addView(toggle);}
     private void mouseToggle(){ToggleButton toggle=new ToggleButton(this);toggle.setTextOn(t("Drag")+" ✓");toggle.setTextOff(t("Drag"));toggle.setText(t("Drag"));toggle.setChecked(false);style(toggle);toggle.setFocusable(false);toggle.setOnCheckedChangeListener((b,on)->desktop.mouseButton(1,on));toolbar.addView(toggle);}
     private int keyCode(String label){
@@ -66,6 +77,7 @@ public final class DesktopActivity extends com.termux.x11.MainActivity implement
     private void toolbar(){
         toolbar.removeAllViews();button("Back",this::finish);button("Settings",()->startActivity(new Intent(this,SettingsActivity.class)));
         button("Keyboard",()->{desktop.requestFocus();((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).toggleSoftInput(InputMethodManager.SHOW_IMPLICIT,0);});
+        button("Game controls",()->setGameControls(gameControls.getVisibility()!=View.VISIBLE));
         button("Volume",this::showVolume);
         button("Zoom",this::showZoom);
         button("F1–F12",()->{settings.preferences.edit().putBoolean("functionKeys",!settings.flag("functionKeys",false)).apply();functionKeys();});
@@ -74,7 +86,7 @@ public final class DesktopActivity extends com.termux.x11.MainActivity implement
         Set<String> visible=settings.preferences.getStringSet("extraKeys",new HashSet<>(Arrays.asList(DEFAULT_KEYS)));
         for(String label:EXTRA_KEYS)if(visible.contains(label)){
             int code=keyCode(label);if(label.equals("Ctrl")||label.equals("Alt")||label.equals("Shift"))keyToggle(label,code);
-            else button(label,()->{hardware(0,code,true);hardware(0,code,false);});
+            else holdButton(label,code,toolbar);
         }
         button("Left click",()->{desktop.mouseButton(1,true);desktop.mouseButton(1,false);});
         button("Right click",()->{desktop.mouseButton(4,true);desktop.mouseButton(4,false);});
@@ -84,7 +96,7 @@ public final class DesktopActivity extends com.termux.x11.MainActivity implement
     }
     private void functionKeys(){
         functionBar.removeAllViews();LinearLayout keys=new LinearLayout(this);functionBar.addView(keys);
-        for(int i=0;i<12;i++){final int code=KeyEvent.KEYCODE_F1+i;Button key=new Button(this);key.setText("F"+(i+1));style(key);key.setFocusable(false);key.setOnClickListener(v->{hardware(0,code,true);hardware(0,code,false);});keys.addView(key);}
+        for(int i=0;i<12;i++)holdButton("F"+(i+1),KeyEvent.KEYCODE_F1+i,keys);
         functionBar.setVisibility(settings.flag("functionKeys",false)&&!settings.flag("fullscreen",false)?View.VISIBLE:View.GONE);
     }
     private void showZoom(){
@@ -170,7 +182,7 @@ public final class DesktopActivity extends com.termux.x11.MainActivity implement
     @Override public void clientConnectedStateChanged(){
         if(closed)return;
         status.setVisibility(x11.isConnected()?View.GONE:View.VISIBLE);
-        if(!x11.isConnected())handler.postDelayed(retry,500);
+        if(!x11.isConnected()){releaseInput();handler.postDelayed(retry,500);}
     }
     @Override public float[] cursor(){return x11==null||!x11.isConnected()?null:x11.cursor();}
     @Override public void pointer(int x,int y,int buttons){
@@ -186,8 +198,8 @@ public final class DesktopActivity extends com.termux.x11.MainActivity implement
     @Override public boolean hardware(int scanCode,int keyCode,boolean down){
         if(keyCode==KeyEvent.KEYCODE_BACK)return false;
         if(closed||!x11.isConnected())return true;
-        long key=((long)scanCode<<32)|(keyCode&0xffffffffL);
-        if(down)pressed.put(key,keyCode);else pressed.remove(key);x11.key(scanCode,keyCode,down);return true;
+        long key=HeldKeys.key(scanCode,keyCode);
+        held.set(Long.valueOf(key),down?new long[]{key}:new long[0]);return true;
     }
     @Override public void key(int symbol,boolean down){
         int code=NativeCore.androidKey(symbol);
@@ -195,11 +207,18 @@ public final class DesktopActivity extends com.termux.x11.MainActivity implement
     }
     @Override public void text(String value){if(!closed&&x11.isConnected())x11.text(value);}
     private void releaseInput(){
-        if(x11==null)return;for(long key:new ArrayList<>(pressed.keySet()))x11.key((int)(key>>32),(int)key,false);pressed.clear();
+        held.clear();
+        if(gameControls!=null)gameControls.release();
+        if(toolbar!=null)resetControls(toolbar);
         if(desktop!=null){desktop.mouseButton(1,false);desktop.mouseButton(2,false);desktop.mouseButton(4,false);}
     }
+    private void resetControls(View view){
+        view.setPressed(false);
+        if(view instanceof CompoundButton)((CompoundButton)view).setChecked(false);
+        if(view instanceof ViewGroup){ViewGroup group=(ViewGroup)view;for(int i=0;i<group.getChildCount();i++)resetControls(group.getChildAt(i));}
+    }
     @Override protected void onPause(){handler.removeCallbacks(progress);releaseInput();if(desktop!=null)desktop.suspendInput();super.onPause();}
-    @Override public void onWindowFocusChanged(boolean focused){super.onWindowFocusChanged(focused);if(focused&&restoreKeyboard){restoreKeyboard=false;desktop.requestFocus();desktop.post(()->((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).showSoftInput(desktop,InputMethodManager.SHOW_IMPLICIT));}}
+    @Override public void onWindowFocusChanged(boolean focused){super.onWindowFocusChanged(focused);if(!focused)releaseInput();if(focused&&restoreKeyboard){restoreKeyboard=false;desktop.requestFocus();desktop.post(()->((InputMethodManager)getSystemService(INPUT_METHOD_SERVICE)).showSoftInput(desktop,InputMethodManager.SHOW_IMPLICIT));}}
     @Override protected void onSaveInstanceState(Bundle state){if(android.os.Build.VERSION.SDK_INT>=30){WindowInsets insets=desktop.getRootWindowInsets();state.putBoolean("keyboard_visible",insets!=null&&insets.isVisible(WindowInsets.Type.ime()));}super.onSaveInstanceState(state);}
     @Override protected void onDestroy(){releaseInput();closed=true;handler.removeCallbacksAndMessages(null);if(x11!=null)x11.close();if(bound)unbindService(binding);super.onDestroy();}
 }

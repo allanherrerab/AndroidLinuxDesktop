@@ -102,9 +102,11 @@ Select **Start Debian** to use your existing installation. An ordinary APK updat
 Older installations automatically add missing audio and language packages when needed. That needs Internet access; fresh images already contain them. Check **View session log** if setup stalls or a download fails, then restart the session to retry.  
 
 Older installations also install missing Mesa utilities when VirGL is first
-selected; the new image includes them for offline startup. VirGL startup runs
-an eight-second, small mapped-window rendering check and falls back to software
-if the server, GPU or workload fails. No OpenGL version is artificially forced.
+selected; the new image includes them for offline startup. VirGL startup uses
+a bounded renderer query and falls back to software when validation fails.
+On Termux:X11's known unmapped-readback error it checks the private socket;
+that startup check alone does not prove correct application rendering.
+No OpenGL version is artificially forced.
 
 To access phone files from Debian, save guest work and stop the session, then
 open **Settings → Android files → Manage device file access**. Grant Android's
@@ -123,6 +125,8 @@ Slide a finger to move the pointer and tap to click. Double-tap and drag holds t
 The toolbar scrolls horizontally. If a button seems missing, try scrolling before deciding I've hidden it out of spite.  
 - **Zoom:** 100–400% magnification.  
 - **F1–F12:** opens a separate scrollable function-key row.  
+- **Arrow and shortcut keys:** keep your finger down to hold a key; lift to release it. Ctrl, Alt and Shift in the toolbar remain explicit toggles.
+- **Game controls:** shows a touch directional pad and Space, N, V, Ctrl, Enter and Esc buttons. Slide on the pad for diagonals and use a second finger for actions. In SuperTuxKart’s default keyboard layout, Space fires, N uses nitro and V drifts. Game controls remain available in fullscreen; × hides them and ☰ restores the toolbar. Keys release when the controls are hidden or the app loses focus.
 - **Fullscreen:** hides the toolbars and Android system bars. The ☰ button brings the controls back. You are allowed to escape fullscreen.  
 - **Drag / Ctrl / Alt:** show a checkmark while held.  
 - **Volume:** adjusts phone media volume and app playback gain. Inside Debian, use the PulseAudio panel plugin or `pavucontrol` for guest/application volume and mute. Hardware volume keys control phone media volume.  
@@ -263,6 +267,12 @@ app with VirGL enabled. Add `--kill-peer` to test an abrupt SIGKILL disconnect.
 The test checks completed frame samples from the surviving client and its peers;
 logs and results are saved under `build/virgl-multiclient/`. It does not restart
 the desktop or type into an existing terminal.
+For texture and animated-mesh regressions, run
+`python3 tools/smoke/smoke-device-virgl-textures.py`. It reads back known pixels
+from an isolated guest EGL surface, checking compressed textures, sRGB, alpha,
+mipmaps, partial updates and integer-addressed floating-point bone textures.
+It saves results under `build/virgl-textures/`; unsupported compressed formats
+are reported as skipped. These are correctness checks, not frame-rate tests.
 For first-run import/extraction tests:  
 ```  
 gradle :app:assembleAcceptance :app:lintAcceptance  
